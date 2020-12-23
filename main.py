@@ -13,6 +13,7 @@ import heapq
 import cmath
 import random
 import functools
+import bisect
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -23,6 +24,48 @@ class ListNode:
     def __init__(self, x):
         self.val = x
         self.next = None
+
+
+"""
+855. 考场就座
+在考场里，一排有 N 个座位，分别编号为 0, 1, 2, ..., N-1 。
+当学生进入考场后，他必须坐在能够使他与离他最近的人之间的距离达到最大化的座位上。如果有多个这样的座位，他会坐在编号最小的座位上。
+(另外，如果考场里没有人，那么学生就坐在 0 号座位上。)
+返回 ExamRoom(int N) 类，它有两个公开的函数：其中，函数 ExamRoom.seat() 会返回一个 int （整型数据），
+代表学生坐的位置；函数 ExamRoom.leave(int p) 代表坐在座位 p 上的学生现在离开了考场。每次调用 ExamRoom.leave(p) 时都保证有学生坐在座位 p 上。
+"""
+class ExamRoom:
+
+    def __init__(self, N):
+        self.N = N
+        # 记录学生的位置
+        self.students = []
+
+    def seat(self):
+        # 还没有学生，直接坐在第一个位置
+        if not self.students:
+            student = 0
+        else:
+            # 有学生，要比较相邻学生之间的位置
+            dist, student = self.students[0], 0
+            for i, s in enumerate(self.students):
+                if i:
+                    prev = self.students[i - 1]
+                    # 与前一个学生之间的中间的位置（小索引优先）
+                    d = int((s - prev) / 2)
+                    # 记录最大的间隔，以及插入的位置
+                    if d > dist:
+                        dist, student = d, prev + d
+            # 最后一个学生与最后一个位置的距离
+            d = self.N - 1 - self.students[-1]
+            if d > dist:
+                student = self.N - 1
+        # 按顺序插入学生的位置
+        bisect.insort(self.students, student)
+        return student
+
+    def leave(self, p):
+        self.students.remove(p)
 
 """
 382. 链表随机节点
@@ -1840,7 +1883,57 @@ class Solution:
                     return False
         return len(stack) == 0
 
+    """
+    392. 判断子序列
+    给定字符串 s 和 t ，判断 s 是否为 t 的子序列。
+    字符串的一个子序列是原始字符串删除一些（也可以不删除）字符而不改变剩余字符相对位置形成的新字符串。（例如，"ace"是"abcde"的一个子序列，而"aec"不是）。
+    """
+    def isSubsequence(self, s: str, t: str) -> bool:
+        ns = len(s)
+        nt = len(t)
+        i = 0
+        j = 0
+        while(i < ns and j < nt):
+            if(s[i] == t[j]):
+                i += 1
+            j += 1
+        return i == ns
 
+    def leftBound(self, arr, target):
+        lo = 0
+        hi = len(arr)
+
+        while(lo < hi):
+            mid = lo + (hi-lo)//2
+            if(target > arr[mid]):
+                lo = mid + 1
+            else:
+                hi = mid
+        return lo
+
+    def isSubsequenceByDivision(self, s: str, t: str) -> bool:
+        index = dict()
+        # 字典记录字符出现的索引
+        for i, c in enumerate(t):
+            if(c not in index):
+                index[c] = [i]
+            else:
+                index[c].append(i)
+
+        i = 0
+        for j, c in enumerate(s):
+            if(c not in index):
+                return False
+            else:
+                idxs = index[c]
+                # 二分法查找字符c大于i的索引
+                lo = self.leftBound(idxs, i)
+                if(lo == len(idxs)):
+                    return False
+                else:
+                    # 在t上移动索引i
+                    i = idxs[lo] + 1
+        return True
 
 
 # Press the green button in the gutter to run the script.
