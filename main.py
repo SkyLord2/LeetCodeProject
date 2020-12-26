@@ -284,6 +284,8 @@ class BlackList:
         return idx
 
 class Solution:
+    def __init__(self):
+        self.ans = float("-inf")
     """
     450. 删除二叉搜索树中的节点 ⭐
     给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。
@@ -1934,6 +1936,49 @@ class Solution:
                     # 在t上移动索引i
                     i = idxs[lo] + 1
         return True
+    """
+    124. 二叉树中的最大路径和
+    给定一个非空二叉树，返回其最大路径和。
+    本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+    """
+    def postTravelSum(self, root: TreeNode) -> int:
+        if(root is None):
+            return 0
+        # 左子树的最大路径和，为负则对整体没有贡献，不必加到路径和中
+        left = max(0, self.postTravelSum(root.left))
+        right = max(0, self.postTravelSum(root.right))
+        # 如果均为负，则最大路径和为父节点的和
+        self.ans = max(self.ans, left + right + root.val)
+        return max(left, right) + root.val
+    def maxPathSum(self, root: TreeNode) -> int:
+        self.postTravelSum(root)
+        return self.ans
+    """
+    99. 恢复二叉搜索树
+    给你二叉搜索树的根节点 root ，该树中的两个节点被错误地交换。请在不改变其结构的情况下，恢复这棵树。
+    进阶：使用 O(n) 空间复杂度的解法很容易实现。你能想出一个只使用常数空间的解决方案吗？
+    """
+    def recoverTree(self, root: TreeNode) -> None:
+        """
+        中序遍历，节点值依次递增，前一个节点的值小与后一个节点的值，否则，说明位置错误
+        """
+        self.prev = TreeNode(float("-inf"))
+        self.error1 = None
+        self.error2 = None
+        def inOrder(root: TreeNode) -> None:
+            if (root is None):
+                return
+            inOrder(root.left)
+            if(self.error1 is None and self.prev.val > root.val):
+                self.error1 = self.prev
+            if(self.error1 and self.prev.val > root.val):
+                self.error2 = root
+            self.prev = root
+            inOrder(root.right)
+        inOrder(root)
+        self.error1.val, self.error2.val = self.error2.val, self.error1.val
+
+
 
 
 # Press the green button in the gutter to run the script.
