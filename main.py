@@ -997,7 +997,7 @@ class Solution:
     在完成所有删除操作后，请你返回列表中剩余区间的数目。
     """
     def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
-        # 排序，按起点升序排列，七点相同，终点降序排列
+        # 排序，按起点升序排列，起点相同，终点降序排列
         def compareRule(a, b):
             if(a[0] == b[0]):
                 return b[1] - a[1]
@@ -1977,8 +1977,88 @@ class Solution:
             inOrder(root.right)
         inOrder(root)
         self.error1.val, self.error2.val = self.error2.val, self.error1.val
+    """
+    354. 俄罗斯套娃信封问题
+    给定一些标记了宽度和高度的信封，宽度和高度以整数对形式 (w, h) 出现。当另一个信封的宽度和高度都比这个信封大的时候，
+    这个信封就可以放进另一个信封里，如同俄罗斯套娃一样。
+    请计算最多能有多少个信封能组成一组“俄罗斯套娃”信封（即可以把一个信封放到另一个信封里面）。
+    说明:
+    不允许旋转信封。
+    """
+    def lengthOfLISDichotomy(self, nums: List[int]):
+        piles = 0
+        n = len(nums)
+        top = [0 for _ in range(n)]
+        for i in range(n):
+            poker = nums[i]
+            left = 0
+            right = piles
+            # 二分查找插入位置
+            while (left < right):
+                mid = (left + right) / 2;
+                if (top[mid] >= poker):
+                    right = mid;
+                else:
+                    left = mid + 1;
+            if (left == piles):
+                piles += 1
+            # 把这张牌放到牌堆顶
+            top[left] = poker;
+        return piles;
 
+    def lengthOfLISDP(self, nums: List[int]):
+        n = len(nums)
+        if(n == 0):
+            return 0
+        # 边界条件
+        dp = [1 for _ in range(n)]
+        for i in range(n):
+            for j in range(i):
+                if(nums[i] > nums[j]):
+                    dp[i] = max(dp[i], dp[j]+1)
+        return max(dp)
 
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        # 排序，按w升序排列，w相同，h降序排列
+        def compareRule(a, b):
+            if (a[0] == b[0]):
+                return b[1] - a[1]
+            return a[0] - b[0]
+        envelopes.sort(key=functools.cmp_to_key(compareRule))
+
+        h = []
+        for idx,i in enumerate(envelopes):
+            h.append(i[1])
+
+        return self.lengthOfLISDP(h)
+    """
+    53. 最大子序和
+    给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+    """
+    def maxSubArray(self, nums: List[int]) -> int:
+        n = len(nums)
+        if(n==0):
+            return 0
+        dp = [[(-sys.maxsize - 1) for _ in range(n)] for _ in range(n)]
+        # 边界条件
+        for i in range(n):
+            dp[i][i] = nums[i]
+
+        for i in range(n):
+            for j in range(i+1, n):
+                dp[i][j] = dp[i][j-1] + nums[j]
+
+        return max(dp)
+    def maxSubArrayII(self, nums: List[int]) -> int:
+        n = len(nums)
+        if (n == 0):
+            return 0
+        dp = [(-sys.maxsize - 1) for _ in range(n)]
+        # 边界条件
+        dp[0] = nums[0]
+        for i in range(1, n):
+            dp[i] = max(nums[i], nums[i] + dp[i-1])
+        return max(dp)
 
 
 # Press the green button in the gutter to run the script.
