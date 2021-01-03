@@ -27,6 +27,64 @@ class ListNode:
 
 
 """
+并查集Union-Find, 通过数组模拟一个森林
+1、自反性：节点p和p是连通的。
+2、对称性：如果节点p和q连通，那么q和p也连通。
+3、传递性：如果节点p和q连通，q和r连通，那么p和r也连通。
+"""
+class UF:
+    def __init__(self, count):
+        # 记录连通分量
+        self.count = count
+        # 记录节点的父节点
+        self.parent = [i for i in range(count)]
+        # 记录树的重量
+        self.size = [1 for _ in range(count)]
+
+    def find(self, x):
+        while(x != self.parent[x]):
+            # 路径压缩
+            self.parent[x] = self.parent[self.parent[x]]
+            x = self.parent[x]
+        return x
+
+    def union(self, p, q):
+        """
+        将p和q链接
+        :param p:
+        :param q:
+        :return:
+        """
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        if(rootP == rootQ):
+            return
+
+        if(self.size[rootP] > self.size[rootQ]):
+            self.parent[rootQ] = rootP
+            self.size[rootP] += self.size[rootQ]
+        else:
+            self.parent[rootP] = rootQ
+            self.size[rootQ] += self.size[rootP]
+        self.count += 1
+    def connected(self, p, q):
+        """
+        p和q是否连通
+        :param p:
+        :param q:
+        :return:
+        """
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        return rootP == rootQ
+    def count(self):
+        """
+        图中有多少个连通分量
+        :return:
+        """
+        return self.count
+
+"""
 855. 考场就座
 在考场里，一排有 N 个座位，分别编号为 0, 1, 2, ..., N-1 。
 当学生进入考场后，他必须坐在能够使他与离他最近的人之间的距离达到最大化的座位上。如果有多个这样的座位，他会坐在编号最小的座位上。
@@ -2094,7 +2152,49 @@ class Solution:
         a.next = self.reverseKGroup(b, k)
 
         return new
+    """
+    130. 被围绕的区域
+    给定一个二维的矩阵，包含 'X' 和 'O'（字母 O）。
+    找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+    """
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        主要思路是适时增加虚拟节点，想办法让元素「分门别类」，建立动态连通关系。
+        """
+        xLen = len(board)
+        if(xLen == 0):
+            return
+        yLen = len(board[0])
 
+        uf = UF(xLen * yLen + 1)
+        dummy = xLen * yLen
+
+        for i in range(xLen):
+            if(board[i][0] == 'O'):
+                uf.union(i * yLen, dummy)
+            if(board[i][yLen-1] == 'O'):
+                uf.union(i * yLen + yLen -1, dummy)
+        for i in range(yLen):
+            if(board[0][i] == 'O'):
+                uf.union(i, dummy)
+            if(board[xLen-1][i] == 'O'):
+                uf.union((xLen-1) * yLen + i, dummy)
+
+        d = [[1,0], [0,1], [0,-1], [-1,0]]
+
+        for i in range(1, xLen-1):
+            for j in range(1, yLen-1):
+                if(board[i][j] == 'O'):
+                    for k in range(4):
+                        x = i + d[k][0]
+                        y = j + d[k][1]
+                        if(board[x][y] == 'O'):
+                            uf.union(x * yLen + y, i * yLen +j)
+
+        for i in range(1, xLen-1):
+            for j in range(1, yLen-1):
+                if(not uf.connected(i * yLen + j, dummy)):
+                    board[i][j] = 'X'
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
