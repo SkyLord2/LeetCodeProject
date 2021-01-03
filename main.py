@@ -2059,6 +2059,41 @@ class Solution:
         for i in range(1, n):
             dp[i] = max(nums[i], nums[i] + dp[i-1])
         return max(dp)
+    """
+    25. K 个一组翻转链表
+    给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+    k 是一个正整数，它的值小于或等于链表的长度。
+    如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+    """
+    # 反转区间[start, end)之间的链表
+    def reverseSegment(self, start: ListNode, end: ListNode):
+        cur = start
+        nxt = start
+        pre = None
+        while(cur != end):
+            nxt = cur.next
+            cur.next = pre
+            pre = cur
+            cur = nxt
+        # 返回新的头节点
+        return pre
+
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+        if(head is None):
+            return head
+        a = head
+        b = head
+        # 递归条件，不足k个直接返回
+        for i in range(k):
+            if(b is None):
+                return head
+            b = b.next
+
+        new = self.reverseSegment(a, b)
+
+        a.next = self.reverseKGroup(b, k)
+
+        return new
 
 
 # Press the green button in the gutter to run the script.
