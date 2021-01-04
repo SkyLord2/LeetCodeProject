@@ -2195,6 +2195,28 @@ class Solution:
             for j in range(1, yLen-1):
                 if(not uf.connected(i * yLen + j, dummy)):
                     board[i][j] = 'X'
+    """
+    990. 等式方程的可满足性
+    给定一个由表示变量之间关系的字符串方程组成的数组，每个字符串方程 equations[i] 的长度为 4，
+    并采用两种不同的形式之一："a==b" 或 "a!=b"。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。
+    只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 true，否则返回 false。 
+    """
+    def equationsPossible(self, equations: List[str]) -> bool:
+        """
+        根据查并集，等式相等表示联通，不等表示未连通
+        :param equations:
+        :return:
+        """
+        uf = UF(26)
+        for idx, eqt in enumerate(equations):
+            if(eqt[1] == '='):
+                uf.union(ord(eqt[0])-97, ord(eqt[3])-97)
+
+        for idx, eqt in enumerate(equations):
+            if(eqt[1] == '!'):
+                if(uf.connected(ord(eqt[0])-97, ord(eqt[3])-97)):
+                    return False
+        return True
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
