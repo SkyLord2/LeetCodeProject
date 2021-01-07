@@ -27,6 +27,108 @@ class ListNode:
 
 
 """
+460. LFU 缓存
+请你为 最不经常使用（LFU）缓存算法设计并实现数据结构。
+
+实现 LFUCache 类：
+LFUCache(int capacity) - 用数据结构的容量 capacity 初始化对象
+int get(int key) - 如果键存在于缓存中，则获取键的值，否则返回 -1。
+void put(int key, int value) - 如果键已存在，则变更其值；如果键不存在，请插入键值对。当缓存达到其容量时，则应该在插入新项之前，使最不经常使用的项无效。在此问题中，当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 最久未使用 的键。
+
+注意「项的使用次数」就是自插入该项以来对其调用 get 和 put 函数的次数之和。使用次数会在对应项被移除后置为 0 。
+
+进阶：   
+你是否可以在 O(1) 时间复杂度内执行两项操作？
+"""
+class LinkedHashSet:
+    def __init__(self):
+        self.l = []
+        self.s = set()
+    def add(self, val):
+        if(val not in self.s):
+            self.l.append(val)
+            self.s.add(val)
+        return self
+    def get(self, idx):
+        if(idx >= len(self.l)):
+            return None
+        else:
+            return self.l[idx]
+
+    def remove(self, val):
+        if(val in self.s):
+            self.s.remove(val)
+            self.l.remove(val)
+    def size(self):
+        return len(self.l)
+    def existed(self, val):
+        return (val in self.s)
+class LFUCache:
+
+    def __init__(self, capacity: int):
+        self.keyToVal = {}
+        self.keyToFreq = {}
+        self.freqToKeys = {}
+        self.minFreq = 0
+        self.capacity = capacity
+
+    def get(self, key: int) -> int:
+        if(key in self.keyToVal):
+            self.increaseFreq(key)
+            return self.keyToVal[key]
+        else:
+            return -1
+    def increaseFreq(self, key):
+        if(key in self.keyToFreq):
+            freq = self.keyToFreq[key]
+            oringinKeys = self.freqToKeys[freq]
+            oringinKeys.remove(key)
+            freq += 1
+            if(oringinKeys.size() == 0):
+                del self.freqToKeys[freq]
+                if(freq == self.minFreq):
+                    self.minFreq = freq
+
+            if(freq in self.freqToKeys):
+                self.freqToKeys[freq].add(key)
+            else:
+                self.freqToKeys[freq] = LinkedHashSet().add(key)
+
+            self.keyToFreq[key] = freq
+        else:
+            self.keyToFreq[key] = 1
+            if(1 in self.freqToKeys):
+                self.freqToKeys[1].add(key)
+            else:
+                self.freqToKeys[1] = LinkedHashSet().add(key)
+            self.minFreq = 1
+
+    def removeMinFreq(self):
+        keys = self.freqToKeys[self.minFreq]
+        oldKey = keys.get(0)
+        keys.remove(oldKey)
+        if(keys.size() == 0):
+            del self.freqToKeys[self.minFreq]
+
+        del self.keyToFreq[oldKey]
+
+        del self.keyToVal[oldKey]
+
+    def put(self, key: int, value: int) -> None:
+        if(self.capacity <= 0):
+            return
+        if(key in self.keyToVal):
+            self.keyToVal[key] = value
+            self.increaseFreq(key)
+        else:
+            if (len(self.keyToVal) < self.capacity):
+                pass
+            else:
+                # 清除使用频率最小的键值
+                self.removeMinFreq()
+            self.keyToVal[key] = value
+            self.increaseFreq(key)
+"""
 并查集Union-Find, 通过数组模拟一个森林
 1、自反性：节点p和p是连通的。
 2、对称性：如果节点p和q连通，那么q和p也连通。
@@ -86,11 +188,11 @@ class UF:
 
 """
 855. 考场就座
-在考场里，一排有 N 个座位，分别编号为 0, 1, 2, ..., N-1 。
+在考场里，一排有 N 个座位，分别编号为 0, 1, 2, ..., N-1 。
 当学生进入考场后，他必须坐在能够使他与离他最近的人之间的距离达到最大化的座位上。如果有多个这样的座位，他会坐在编号最小的座位上。
 (另外，如果考场里没有人，那么学生就坐在 0 号座位上。)
-返回 ExamRoom(int N) 类，它有两个公开的函数：其中，函数 ExamRoom.seat() 会返回一个 int （整型数据），
-代表学生坐的位置；函数 ExamRoom.leave(int p) 代表坐在座位 p 上的学生现在离开了考场。每次调用 ExamRoom.leave(p) 时都保证有学生坐在座位 p 上。
+返回 ExamRoom(int N) 类，它有两个公开的函数：其中，函数 ExamRoom.seat() 会返回一个 int （整型数据），
+代表学生坐的位置；函数 ExamRoom.leave(int p) 代表坐在座位 p 上的学生现在离开了考场。每次调用 ExamRoom.leave(p) 时都保证有学生坐在座位 p 上。
 """
 class ExamRoom:
 
@@ -256,7 +358,7 @@ class NestedIterator:
 
 """
 380. 常数时间插入、删除和获取随机元素 ⭐⭐
-设计一个支持在平均 时间复杂度 O(1) 下，执行以下操作的数据结构。
+设计一个支持在平均 时间复杂度 O(1) 下，执行以下操作的数据结构。
 
 insert(val)：当元素 val 不存在时，向集合中插入该项。
 remove(val)：元素 val 存在时，从集合中移除该项。
@@ -346,7 +448,7 @@ class Solution:
         self.ans = float("-inf")
     """
     450. 删除二叉搜索树中的节点 ⭐
-    给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。
+    给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。
     返回二叉搜索树（有可能被更新）的根节点的引用。
     """
     def getMinNode(self,root: TreeNode):
@@ -492,7 +594,7 @@ class Solution:
         return ret
     """
     27. 移除元素
-    给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+    给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
     不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
     元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
     """
@@ -546,7 +648,7 @@ class Solution:
     """
     752. 打开转盘锁
     你有一个带有四个圆形拨轮的转盘锁。每个拨轮都有10个数字： '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' 。
-    每个拨轮可以自由旋转：例如把 '9' 变为  '0'，'0' 变为 '9' 。每次旋转都只能旋转一个拨轮的一位数字。
+    每个拨轮可以自由旋转：例如把 '9' 变为  '0'，'0' 变为 '9' 。每次旋转都只能旋转一个拨轮的一位数字。
     锁的初始数字为 '0000' ，一个代表四个拨轮的数字的字符串。
     列表 deadends 包含了一组死亡数字，一旦拨轮的数字和列表里的任何一个元素相同，这个锁将会被永久锁定，无法再被旋转。
     字符串 target 代表可以解锁的数字，你需要给出最小的旋转次数，如果无论如何不能解锁，返回 -1。
@@ -594,7 +696,7 @@ class Solution:
         return "".join(pwd)
     """
     704. 二分查找
-    给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
+    给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
     """
     def search(self, nums: List[int], target: int) -> int:
         left = 0
@@ -727,7 +829,7 @@ class Solution:
     """
     438. 找到字符串中所有字母异位词
     给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
-    字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
+    字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
     说明：
     字母异位词指字母相同，但排列不同的字符串。
     不考虑答案输出的顺序。
@@ -806,7 +908,7 @@ class Solution:
         return nLen
     """
     121. 买卖股票的最佳时机
-    给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+    给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
     如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
     注意：你不能在买入股票前卖出股票。
     """
@@ -831,7 +933,7 @@ class Solution:
         return dp[nLen-1][0]
     """
     122. 买卖股票的最佳时机 II
-    给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+    给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
     设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
     注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
     """
@@ -857,8 +959,8 @@ class Solution:
     """
     123. 买卖股票的最佳时机 III
     给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
-    设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
-    注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+    设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+    注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
     """
     def maxProfitIII(self, prices: List[int]) -> int:
         nLen = len(prices)
@@ -885,7 +987,7 @@ class Solution:
     188. 买卖股票的最佳时机 IV
     给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
     设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。
-    注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+    注意: 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
     """
     def maxProfitIV(self, k: int, prices: List[int]) -> int:
         nLen = len(prices)
@@ -916,7 +1018,7 @@ class Solution:
         return dp[nLen - 1][k][0]
     """
     309. 最佳买卖股票时机含冷冻期
-    给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+    给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
     设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
     1.你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
     2.卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
@@ -943,7 +1045,7 @@ class Solution:
         return dp[nLen - 1][0]
     """
     714. 买卖股票的最佳时机含手续费
-    给定一个整数数组 prices，其中第 i 个元素代表了第 i 天的股票价格 ；非负整数 fee 代表了交易股票的手续费用。
+    给定一个整数数组 prices，其中第 i 个元素代表了第 i 天的股票价格 ；非负整数 fee 代表了交易股票的手续费用。
     你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。
     返回获得利润的最大值。
     注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
@@ -1051,7 +1153,7 @@ class Solution:
     """
     1288. 删除被覆盖区间
     给你一个区间列表，请你删除列表中被其他区间所覆盖的区间。
-    只有当 c <= a 且 b <= d 时，我们才认为区间 [a,b) 被区间 [c,d) 覆盖。
+    只有当 c <= a 且 b <= d 时，我们才认为区间 [a,b) 被区间 [c,d) 覆盖。
     在完成所有删除操作后，请你返回列表中剩余区间的数目。
     """
     def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
@@ -1112,7 +1214,7 @@ class Solution:
     986. 区间列表的交集
     给定两个由一些 闭区间 组成的列表，每个区间列表都是成对不相交的，并且已经排序。
     返回这两个区间列表的交集。
-    （形式上，闭区间 [a, b]（其中 a <= b）表示实数 x 的集合，而 a <= x <= b。两个闭区间的交集是一组实数，
+    （形式上，闭区间 [a, b]（其中 a <= b）表示实数 x 的集合，而 a <= x <= b。两个闭区间的交集是一组实数，
     要么为空集，要么为闭区间。例如，[1, 3] 和 [2, 4] 的交集为 [2, 3]。）
     """
     def intervalIntersection(self, A: List[List[int]], B: List[List[int]]) -> List[List[int]]:
@@ -1139,7 +1241,7 @@ class Solution:
         return ret
     """
     15. 三数之和
-    给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？
+    给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？
     请你找出所有满足条件且不重复的三元组。
     注意：答案中不可以包含重复的三元组。
     """
@@ -1182,10 +1284,10 @@ class Solution:
         return ret
     """
     887. 鸡蛋掉落
-    你将获得 K 个鸡蛋，并可以使用一栋从 1 到 N  共有 N 层楼的建筑。
+    你将获得 K 个鸡蛋，并可以使用一栋从 1 到 N  共有 N 层楼的建筑。
     每个蛋的功能都是一样的，如果一个蛋碎了，你就不能再把它掉下去。
-    你知道存在楼层 F ，满足 0 <= F <= N 任何从高于 F 的楼层落下的鸡蛋都会碎，从 F 楼层或比它低的楼层落下的鸡蛋都不会破。
-    每次移动，你可以取一个鸡蛋（如果你有完整的鸡蛋）并把它从任一楼层 X 扔下（满足 1 <= X <= N）。
+    你知道存在楼层 F ，满足 0 <= F <= N 任何从高于 F 的楼层落下的鸡蛋都会碎，从 F 楼层或比它低的楼层落下的鸡蛋都不会破。
+    每次移动，你可以取一个鸡蛋（如果你有完整的鸡蛋）并把它从任一楼层 X 扔下（满足 1 <= X <= N）。
     你的目标是确切地知道 F 的值是多少。
     无论 F 的初始值如何，你确定 F 的值的最小移动次数是多少？
     """
@@ -1443,10 +1545,10 @@ class Solution:
         return j
     """
     877. 石子游戏
-    亚历克斯和李用几堆石子在做游戏。偶数堆石子排成一行，每堆都有正整数颗石子 piles[i] 。
+    亚历克斯和李用几堆石子在做游戏。偶数堆石子排成一行，每堆都有正整数颗石子 piles[i] 。
     游戏以谁手中的石子最多来决出胜负。石子的总数是奇数，所以没有平局。
     亚历克斯和李轮流进行，亚历克斯先开始。 每回合，玩家从行的开始或结束处取走整堆石头。 这种情况一直持续到没有更多的石子堆为止，此时手中石子最多的玩家获胜。
-    假设亚历克斯和李都发挥出最佳水平，当亚历克斯赢得比赛时返回 true ，当李赢得比赛时返回 false 。
+    假设亚历克斯和李都发挥出最佳水平，当亚历克斯赢得比赛时返回 true ，当李赢得比赛时返回 false 。
     """
     def stoneGame(self, piles: List[int]) -> bool:
         nLen = len(piles)
@@ -1476,10 +1578,10 @@ class Solution:
         return dp[0][nLen - 1][0] > dp[0][nLen - 1][1]
     """
     10. 正则表达式匹配
-    给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
+    给你一个字符串 s 和一个字符规律 p，请你来实现一个支持 '.' 和 '*' 的正则表达式匹配。
     '.' 匹配任意单个字符
     '*' 匹配零个或多个前面的那一个元素
-    所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
+    所谓匹配，是要涵盖 整个 字符串 s的，而不是部分字符串。
     """
     mem = dict()
     def dypro(self, s, i, p, j):
@@ -1521,8 +1623,8 @@ class Solution:
         return self.dypro(s, 0, p, 0)
     """
     28. 实现 strStr()
-    给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。
-    如果不存在，则返回  -1
+    给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。
+    如果不存在，则返回  -1
     """
     def strStr_bruteforce(self, haystack: str, needle: str) -> int:
         N = len(haystack)
@@ -1542,8 +1644,8 @@ class Solution:
         return -1
     """
     1312. 让字符串成为回文串的最少插入次数
-    给你一个字符串 s ，每一次操作你都可以在字符串的任意位置插入任意字符。
-    请你返回让 s 成为回文串的 最少操作次数 。
+    给你一个字符串 s ，每一次操作你都可以在字符串的任意位置插入任意字符。
+    请你返回让 s 成为回文串的 最少操作次数 。
     「回文串」是正读和反读都相同的字符串。
     """
     def minInsertions(self, s: str) -> int:
@@ -1615,7 +1717,7 @@ class Solution:
         return dp[0][nLen-1]
     """
     230. 二叉搜索树中第K小的元素
-    给定一个二叉搜索树，编写一个函数 kthSmallest 来查找其中第 k 个最小的元素。
+    给定一个二叉搜索树，编写一个函数 kthSmallest 来查找其中第 k 个最小的元素。
     说明：
     你可以假设 k 总是有效的，1 ≤ k ≤ 二叉搜索树元素个数。
     """
@@ -1632,7 +1734,7 @@ class Solution:
         return ret[k-1]
     """
     538. 把二叉搜索树转换为累加树
-    给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+    给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
     提醒一下，二叉搜索树满足下列约束条件：
     节点的左子树仅包含键 小于 节点键的节点。
     节点的右子树仅包含键 大于 节点键的节点。
@@ -1676,9 +1778,9 @@ class Solution:
         return ans
     """
     1109. 航班预订统计
-    这里有 n 个航班，它们分别从 1 到 n 进行编号。
-    我们这儿有一份航班预订表，表中第 i 条预订记录 bookings[i] = [j, k, l] 意味着我们在从 j 到 k 的每个航班上预订了 l 个座位。
-    请你返回一个长度为 n 的数组 answer，按航班编号顺序返回每个航班上预订的座位数。
+    这里有 n 个航班，它们分别从 1 到 n 进行编号。
+    我们这儿有一份航班预订表，表中第 i 条预订记录 bookings[i] = [j, k, l] 意味着我们在从 j 到 k 的每个航班上预订了 l 个座位。
+    请你返回一个长度为 n 的数组 answer，按航班编号顺序返回每个航班上预订的座位数。
     """
     def corpFlightBookings(self, bookings: List[List[int]], n: int) -> List[int]:
         nLen = len(bookings)
@@ -1778,8 +1880,8 @@ class Solution:
         return res
     """
     793. 阶乘函数后K个零
-    f(x) 是 x! 末尾是0的数量。（回想一下 x! = 1 * 2 * 3 * ... * x，且0! = 1）
-    例如， f(3) = 0 ，因为3! = 6的末尾没有0；而 f(11) = 2 ，因为11!= 39916800末端有2个0。给定 K，找出多少个非负整数x ，有 f(x) = K 的性质。
+    f(x) 是 x! 末尾是0的数量。（回想一下 x! = 1 * 2 * 3 * ... * x，且0! = 1）
+    例如， f(3) = 0 ，因为3! = 6的末尾没有0；而 f(11) = 2 ，因为11!= 39916800末端有2个0。给定 K，找出多少个非负整数x ，有 f(x) = K 的性质。
     """
     def lowerBound(self, K: int):
         lo = 10**K
@@ -1811,7 +1913,7 @@ class Solution:
         return self.upperBound(K) - self.lowerBound(K) +1
     """
     448. 找到所有数组中消失的数字
-    给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
+    给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
     找到所有在 [1, n] 范围之间没有出现在数组中的数字。
     您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
     """
@@ -1826,7 +1928,7 @@ class Solution:
         return res
     """
     645. 错误的集合
-    集合 S 包含从1到 n 的整数。不幸的是，因为数据错误，导致集合里面某一个元素复制了成了集合里面的另外一个元素的值，导致集合丢失了一个整数并且有一个元素重复。
+    集合 S 包含从1到 n 的整数。不幸的是，因为数据错误，导致集合里面某一个元素复制了成了集合里面的另外一个元素的值，导致集合丢失了一个整数并且有一个元素重复。
     给定一个数组 nums 代表了集合 S 发生错误后的结果。你的任务是首先寻找到重复出现的整数，再找到丢失的整数，将它们以数组的形式返回。
     """
     def findErrorNums(self, nums: List[int]) -> List[int]:
@@ -2037,7 +2139,7 @@ class Solution:
         self.error1.val, self.error2.val = self.error2.val, self.error1.val
     """
     354. 俄罗斯套娃信封问题
-    给定一些标记了宽度和高度的信封，宽度和高度以整数对形式 (w, h) 出现。当另一个信封的宽度和高度都比这个信封大的时候，
+    给定一些标记了宽度和高度的信封，宽度和高度以整数对形式 (w, h) 出现。当另一个信封的宽度和高度都比这个信封大的时候，
     这个信封就可以放进另一个信封里，如同俄罗斯套娃一样。
     请计算最多能有多少个信封能组成一组“俄罗斯套娃”信封（即可以把一个信封放到另一个信封里面）。
     说明:
@@ -2198,8 +2300,8 @@ class Solution:
     """
     990. 等式方程的可满足性
     给定一个由表示变量之间关系的字符串方程组成的数组，每个字符串方程 equations[i] 的长度为 4，
-    并采用两种不同的形式之一："a==b" 或 "a!=b"。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。
-    只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 true，否则返回 false。 
+    并采用两种不同的形式之一："a==b" 或 "a!=b"。在这里，a 和 b 是小写字母（不一定不同），表示单字母变量名。
+    只有当可以将整数分配给变量名，以便满足所有给定的方程时才返回 true，否则返回 false。 
     """
     def equationsPossible(self, equations: List[str]) -> bool:
         """
