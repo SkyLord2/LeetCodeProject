@@ -2319,6 +2319,35 @@ class Solution:
                 if(uf.connected(ord(eqt[0])-97, ord(eqt[3])-97)):
                     return False
         return True
+    """
+    739. 每日温度
+    请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。
+    如果气温在这之后都不会升高，请在该位置用 0 来代替。
+    例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0, 0]。
+    提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。
+    """
+    def dailyTemperatures(self, T: List[int]) -> List[int]:
+        """
+        单调栈
+        :param T:
+        :return:
+        """
+        n = len(T)
+        res = [0 for _ in range(n)]
+        stack = []
+
+        for i in range(n-1, -1, -1):
+            while(stack and T[stack[-1]] <= T[i]):
+                stack.pop()
+            res[i] = (stack[-1] - i) if(stack) else 0
+            stack.append(i)
+        return res
+
+
+
+
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
