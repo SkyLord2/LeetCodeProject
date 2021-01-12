@@ -2409,7 +2409,7 @@ class Solution:
 
     """
     142. 环形链表 II
-    给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+    给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
     为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 
     如果 pos 是 -1，则在该链表中没有环。注意，pos 仅仅是用于标识环的情况，并不会作为参数传递到函数中。
     
@@ -2419,7 +2419,38 @@ class Solution:
     你是否可以使用 O(1) 空间解决此题？
     """
     def detectCycle(self, head: ListNode) -> ListNode:
-        pass
+        """
+        快慢指针
+        :param head:
+        :return:
+        """
+        slow = head
+        fast = head
+
+        while(fast and fast.next):
+            fast = fast.next.next
+            slow = slow.next
+            if(slow == fast):
+                break
+        # 无环链表
+        if(not fast or not fast.next):
+            return None
+        """
+        快指针走过的节点数(2k)是慢指针的两倍(K)
+        相遇点到环起点的距离为M
+        慢指针到环起点走过的距离 K - M
+        快指针到环起点走做的距离 2K - M
+        2K - M - (K-M) = K 是环节点的整数倍
+        则链表起点到环的起点的距离为 K-M
+        慢指针从链表起点走过 K - M，到达环起点
+        快指针从相遇点M，走过 K - M ，也到达起点 
+        """
+        slow = head
+
+        while(slow != fast):
+            slow = slow.next
+            fast = fast.next
+        return slow
 
     """
     19. 删除链表的倒数第N个节点
