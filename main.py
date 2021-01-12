@@ -2457,9 +2457,27 @@ class Solution:
     给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
     """
     def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
-        pass
+        """
+        快慢指针
+        :param head:
+        :param n:
+        :return:
+        """
+        slow = head
+        fast = head
 
-
+        while(n > 0):
+            n -= 1
+            fast = fast.next
+        # 链表的长度刚好为n
+        if(not fast):
+            return  head.next
+        # slow与fast的间距始终为n，fast到达终点时，slow.next就是倒数第n个节点
+        while(fast and fast.next):
+            slow = slow.next
+            fast = fast.next
+        slow.next = slow.next.next
+        return head
 
 
 # Press the green button in the gutter to run the script.
