@@ -2478,6 +2478,48 @@ class Solution:
             fast = fast.next
         slow.next = slow.next.next
         return head
+    """
+    494. 目标和
+    给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，
+    你都可以从 + 或 -中选择一个符号添加在前面。
+
+    返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
+    """
+    def findTargetSumWays(self, nums: List[int], S: int) -> int:
+        """
+        将数组nums分为两部分，A（+）和B（-），
+        sum(A) - sum(B) = target
+        sum(A) = target + sum(B)
+        sum(A) + sum(A) = target + sum(B) + sum(A)
+        2 * sum(A) = target + sum(nums)
+        sum(A) = (target + sum(nums)) // 2
+        转化为背包问题, 背包容量为sum(A), 从nums数组中选择，刚好装满背包
+        :param nums:
+        :param S:
+        :return:
+        """
+        _sum = sum(nums)
+        if(_sum < S or (_sum + S)%2 == 1):
+            return 0
+
+        target = int((S + sum(nums))/2)
+
+        n = len(nums)
+        dp = [[0 for _ in range(target + 1)] for _ in range(n + 1)]
+
+        for i in range(n + 1):
+            dp[i][0] = 1
+
+        for i in range(1, n + 1):
+            for j in range(0, target + 1):
+                if(j >= nums[i-1]):
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j - nums[i-1]]
+                else:
+                    dp[i][j] = dp[i-1][j]
+        return dp[n][target]
+
+
+
 
 
 # Press the green button in the gutter to run the script.
