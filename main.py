@@ -2554,6 +2554,49 @@ class Solution:
         n = self.longestCommonSubsequence(word1, word2)
         res = n1 + n2 - 2 * n
         return res
+    """
+    712. 两个字符串的最小ASCII删除和
+    给定两个字符串s1, s2，找到使两个字符串相等所需删除字符的ASCII值的最小和。
+    """
+    def sumStrASCII(self, s: str, start: int, end: int):
+        n = len(s)
+        if(start >= n):
+            return 0
+        if(end > n):
+            end = n
+        if(start > end):
+            return 0
+        res = 0
+        for i in range(start, end):
+            res += ord(s[i])
+        return res
+
+    def minimumDeleteSum(self, s1: str, s2: str) -> int:
+        n1 = len(s1)
+        n2 = len(s2)
+        # dp数组，dp[i][j]表示 text1[...i]与text2[...j]之间需要移除的最少字符的ASCII码的和
+        dp = [[-1 for _ in range(n2+1)] for _ in range(n1+1)]
+        # s1 s2 均为空，则不需要任何删除
+        dp[0][0] = 0
+        # 边界条件 dp[0][j] = sum(s2[...j]) dp[i][0] = sum(s1[i])
+        for i in range(1, n1+1):
+            dp[i][0] = self.sumStrASCII(s1, 0, i)
+
+        for j in range(1, n2+1):
+            dp[0][j] = self.sumStrASCII(s2, 0, j)
+
+        for i in range(1, n1+1):
+            for j in range(1, n2+1):
+                # 字符相等，则这两个字符都不需要移除，此时需要移除的最小ASCII码和等于上一次
+                if(s1[i-1] == s2[j-1]):
+                    dp[i][j] = dp[i-1][j-1]
+                else:
+                # 两个字符不相等，则要移除至少移除一个
+                    dp[i][j] = min(ord(s1[i-1]) + dp[i-1][j], ord(s2[j-1]) + dp[i][j-1])
+        return dp[n1][n2]
+
+
+
 
 
 # Press the green button in the gutter to run the script.
