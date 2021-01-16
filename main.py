@@ -2594,6 +2594,44 @@ class Solution:
                 # 两个字符不相等，则要移除至少移除一个
                     dp[i][j] = min(ord(s1[i-1]) + dp[i-1][j], ord(s2[j-1]) + dp[i][j-1])
         return dp[n1][n2]
+    """
+    452. 用最少数量的箭引爆气球
+    在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。
+    由于它是水平的，所以纵坐标并不重要，因此只要知道开始和结束的横坐标就足够了。开始坐标总是小于结束坐标。
+    一支弓箭可以沿着 x 轴从不同点完全垂直地射出。在坐标 x 处射出一支箭，若有一个气球的直径的开始和结束坐标为 xstart，xend， 
+    且满足  xstart ≤ x ≤ xend，则该气球会被引爆。可以射出的弓箭的数量没有限制。 弓箭一旦被射出之后，可以无限地前进。
+    我们想找到使得所有气球全部被引爆，所需的弓箭的最小数量。
+    给你一个数组 points ，其中 points [i] = [xstart,xend] ，返回引爆所有气球所必须射出的最小弓箭数。
+    """
+    def findMinArrowShots(self, points: List[List[int]]) -> int:
+        """
+        等价于去掉重叠的子区间，找到，不重叠区间的个数
+        :param points:
+        :return:
+        """
+        n = len(points)
+        if (n == 0):
+            return 0
+
+        # 排序，按终点升序排列
+        def compareRule(a, b):
+            return a[1] - b[1]
+
+        points.sort(key=functools.cmp_to_key(compareRule))
+
+        count = 1
+        xEnd = points[0][1]
+        for i in range(1, n):
+            start = points[i][0]
+            # 取等号时，区间边界相邻，也算区间重合
+            if (start > xEnd):
+                count += 1
+                xEnd = points[i][1]
+        return count
+
+
+
+
 
 
 
