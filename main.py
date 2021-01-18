@@ -2629,9 +2629,40 @@ class Solution:
                 xEnd = points[i][1]
         return count
 
+    """
+    312. 戳气球
+    有 n 个气球，编号为0 到 n - 1，每个气球上都标有一个数字，这些数字存在数组 nums 中。
+    现在要求你戳破所有的气球。戳破第 i 个气球，你可以获得 nums[i - 1] * nums[i] * nums[i + 1] 枚硬币。
+    这里的 i - 1 和 i + 1 代表和 i 相邻的两个气球的序号。如果 i - 1或 i + 1 超出了数组的边界，那么就当它是一个数字为 1 的气球。
+    求所能获得硬币的最大数量。
+    """
+    def maxCoins(self, nums: List[int]) -> int:
+        n = len(nums)
+        if(n == 0):
+            return 0
 
+        # 凑结构，使子问题相互独立
+        # 构建新的数组points,其中，points[0] = points[n+1] = 1
+        # pints[1...n] = nums[0...n-1]
+        points = [0 for _ in range(n+2)]
+        points[0] = points[n + 1] = 1
+        for i in range(1, n+1):
+            points[i] = nums[i-1]
 
+        # 定义dp数组， dp[i][j]表示points[i....j]（不包括i和j）之间能获得的最大硬币数
+        # 边界条件：当i >= j时，dp[i][j] = 0
+        dp = [[0 for _ in range(n+2)] for _ in range(n+2)]
 
+        #按dp表，从下到上，从左到右进行遍历
+        # 从下到上
+        for i in range(n, -1, -1):
+            # 从左到右, j > i
+            for j in range(i + 1, n+2):
+                # k 为 （i,j）之间，最后一个 *被戳破* 的气球
+                # 遍历所有可能的k
+                for k in range(i+1, j):
+                    dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + points[i]*points[k]*points[j])
+        return dp[0][n+1]
 
 
 
