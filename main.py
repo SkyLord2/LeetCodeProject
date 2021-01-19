@@ -27,6 +27,42 @@ class ListNode:
 
 
 """
+字符串匹配 KMP 算法
+通过 确定有限状态自动机(deterministic finit automaton, DFA) 来实现, 详细的理论见编译原理 
+"""
+class KMP:
+    def __init__(self, pat: str):
+        self.pat = pat
+        # 构建自动机的状态转移矩阵
+        self.length = len(pat)
+        self.dp = [[0 for _ in range(256)] for i in range(self.length)]
+        # 当前状态的前一个状态
+        X = 0
+        # 匹配到模式串的第一个字符时，状态从 0 转移到 1
+        self.dp[0][ord(pat[0])] = 1
+        # 状态从 1 开始
+        for i in range(1, self.length):
+            for j in range(256):
+                # 匹配，状态前进
+                if(ord(self.pat[i]) == j):
+                    self.dp[i][j] = i+1
+                # 不匹配，状态适当后退
+                else:
+                    self.dp[i][j] = self.dp[X][j]
+            X = self.dp[X][self.pat[i]]
+
+    def search(self, txt: str):
+        N = len(txt)
+        j = 0
+        for i in range(N):
+            # 从状态矩阵中获取 下一个 状态
+            j = self.dp[j][ord(txt[i])]
+            # 到达终止状态
+            if(j == self.length):
+                return i - self.length + 1
+        return -1
+
+"""
 460. LFU 缓存
 请你为 最不经常使用（LFU）缓存算法设计并实现数据结构。
 
@@ -2663,7 +2699,6 @@ class Solution:
                 for k in range(i+1, j):
                     dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + points[i]*points[k]*points[j])
         return dp[0][n+1]
-
 
 
 
