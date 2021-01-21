@@ -36,31 +36,35 @@ class KMP:
         # 构建自动机的状态转移矩阵
         self.length = len(pat)
         self.dp = [[0 for _ in range(256)] for i in range(self.length)]
-        # 当前状态的前一个状态
-        X = 0
-        # 匹配到模式串的第一个字符时，状态从 0 转移到 1
-        self.dp[0][ord(pat[0])] = 1
-        # 状态从 1 开始
-        for i in range(1, self.length):
-            for j in range(256):
-                # 匹配，状态前进
-                if(ord(self.pat[i]) == j):
-                    self.dp[i][j] = i+1
-                # 不匹配，状态适当后退
-                else:
-                    self.dp[i][j] = self.dp[X][j]
-            X = self.dp[X][self.pat[i]]
+        if (self.length > 0):
+            # 当前状态的前一个状态
+            X = 0
+            # 匹配到模式串的第一个字符时，状态从 0 转移到 1
+            self.dp[0][ord(pat[0])] = 1
+            # 状态从 1 开始
+            for i in range(1, self.length):
+                for j in range(256):
+                    # 匹配，状态前进
+                    if(ord(self.pat[i]) == j):
+                        self.dp[i][j] = i+1
+                    # 不匹配，状态适当后退
+                    else:
+                        self.dp[i][j] = self.dp[X][j]
+                X = self.dp[X][ord(self.pat[i])]
 
     def search(self, txt: str):
-        N = len(txt)
-        j = 0
-        for i in range(N):
-            # 从状态矩阵中获取 下一个 状态
-            j = self.dp[j][ord(txt[i])]
-            # 到达终止状态
-            if(j == self.length):
-                return i - self.length + 1
-        return -1
+        if (self.length == 0):
+            return 0
+        else:
+            N = len(txt)
+            j = 0
+            for i in range(N):
+                # 从状态矩阵中获取 下一个 状态
+                j = self.dp[j][ord(txt[i])]
+                # 到达终止状态
+                if(j == self.length):
+                    return i - self.length + 1
+            return -1
 
 """
 460. LFU 缓存
@@ -2699,8 +2703,62 @@ class Solution:
                 for k in range(i+1, j):
                     dp[i][j] = max(dp[i][j], dp[i][k] + dp[k][j] + points[i]*points[k]*points[j])
         return dp[0][n+1]
+    """
+    28. 实现 strStr()
+    实现 strStr() 函数。
+    给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。
+    如果不存在，则返回  -1。
+    """
+    def strStr(self, haystack: str, needle: str) -> int:
+        N = len(haystack)
+        M = len(needle)
+        if (M == 0):
+            return 0
+        for i in range(N - M + 1):
+            j = 0
+            matched = True
+            for j in range(M):
 
+                if (haystack[i + j] != needle[j]):
+                    matched = False
+                    break
+            if (matched and j + 1 == M):
+                return i
+        return -1
+    def strStrII(self, haystack: str, needle: str):
+        kmp = KMP(needle)
+        return kmp.search(haystack)
+    """
+    78. 子集
+    给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+    解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+    """
+    def subsetsRevurrent(self, nums: List[int]) -> List[List[int]]:
+        if (not nums):
+            return [[]]
+        last = nums.pop()
+        res = self.subsets(nums)
+        l = len(res)
+        for i in range(l):
+            s = res[i].copy()
+            s.append(last)
+            res.append(s)
+        return res
+    def subsetsRecall(self, nums: List[int]) -> List[List[int]]:
+        trace = []
+        res = []
+        n = len(nums)
 
+        def recall(nums: List[int], start: int, trace: List[int]):
+            res.append(trace.copy())
+
+            for i in range(start, n):
+                trace.append(nums[i])
+                recall(nums, i + 1, trace)
+                trace.remove(nums[i])
+
+        recall(nums, 0, trace)
+        return res
 
 
 # Press the green button in the gutter to run the script.
