@@ -2782,7 +2782,65 @@ class Solution:
         recall(n, 1, k, trace)
         return res
 
-    
+    """
+    37. 解数独
+    编写一个程序，通过填充空格来解决数独问题。
+    一个数独的解法需遵循如下规则：
+
+    数字 1-9 在每一行只能出现一次。
+    数字 1-9 在每一列只能出现一次。
+    数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+    空白格用 '.' 表示。
+    """
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        回溯算法
+        """
+        choice = '123456789'
+        def isValid(board, row: int, colum: int, ch: str):
+            for i in range(9):
+                # 行
+                if(board[row][i] == ch):
+                    return False
+                # 列
+                if(board[i][colum] == ch):
+                    return False
+                # 3 x 3 宫格
+                if(board[(row//3)*3 + i//3][(colum//3)*3 + i%3] == ch):
+                    return False
+            return True
+
+        def backtrace(board: List[List[str]], i: int, j: int):
+            m = 9
+            n = 9
+            # 遍历完一行的所有列，开始遍历下一行
+            if(j == n):
+                return backtrace(board, i+1, 0)
+            # 已经遍历完所有行
+            if(i == m):
+                return True
+            # 当前位置已经有数字，不需要填，直接跳过
+            if(board[i][j] != '.'):
+                return backtrace(board, i, j+1)
+
+            # 遍历所有可能的选择
+            for idx, ch in enumerate(choice):
+                if(not isValid(board, i, j, ch)):
+                    continue
+                # 选择当前字符
+                board[i][j] = ch
+                # 找到一个可行解，直接返回
+                if(backtrace(board, i, j+1)):
+                    return True
+                # 取消选择当前字符
+                board[i][j] = '.'
+        backtrace(board, 0, 0)
+
+
+
+
+
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     pass
