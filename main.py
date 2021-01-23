@@ -2759,8 +2759,30 @@ class Solution:
 
         recall(nums, 0, trace)
         return res
+    """
+    77. 组合
+    给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+    """
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        # trace 保存路径
+        trace = []
+        res = []
+        if (k > n or k <= 0 or n <= 0):
+            return []
 
+        def recall(n, s, k, trace):
+            if (len(trace) == k):
+                res.append(trace.copy())
+                return
+            for i in range(s, n + 1):
+                trace.append(i)
+                recall(n, i + 1, k, trace)
+                trace.remove(i)
 
+        recall(n, 1, k, trace)
+        return res
+
+    
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     pass
