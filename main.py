@@ -2835,11 +2835,43 @@ class Solution:
                 # 取消选择当前字符
                 board[i][j] = '.'
         backtrace(board, 0, 0)
+    """
+    22. 括号生成
+    数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+    """
+    def generateParenthesis(self, n: int) -> List[str]:
+        """
+        1. 一个 合法 的括号字符串组合，左括号的数量一定等于右括号的数量
+        2. 一个合法的 括号字符串 p，对于 0 <= i < len(p) 都有左括号数量 大于等于 右括号的数量
+        现在有 2n 个位置，每个位置可以放置字符 ( 或者 )，组成的所有括号组合中，有多少个是合法的？
+        :param n:
+        :return:
+        """
+        if(n == 0):
+            return []
+        res = []
+        track = []
+        def recall(left: int, right: int, track: List[str]):
+            # 剩下的左括号数 一定小于 右括号数
+            if(right < left):
+                return
+            # 小于 0 ，不合法
+            if(left < 0 or right < 0):
+                return
+            # 等于 0
+            if(left == 0 and right == 0):
+                res.append(''.join(track.copy()))
+                return
 
+            track.append('(')
+            recall(left - 1, right, track)
+            track.pop()
 
-
-
-
+            track.append(')')
+            recall(left, right - 1, track)
+            track.pop()
+        recall(n, n, track)
+        return res
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
