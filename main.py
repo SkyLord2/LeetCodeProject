@@ -2872,6 +2872,53 @@ class Solution:
             track.pop()
         recall(n, n, track)
         return res
+    """
+    773. 滑动谜题
+    在一个 2 x 3 的板上（board）有 5 块砖瓦，用数字 1~5 来表示, 以及一块空缺用 0 来表示.
+    一次移动定义为选择 0 与一个相邻的数字（上下左右）进行交换.
+    最终当板 board 的结果是 [[1,2,3],[4,5,0]] 谜板被解开。
+    给出一个谜板的初始状态，返回最少可以通过多少次移动解开谜板，如果不能解开谜板，则返回 -1 。
+    """
+    def slidingPuzzle(self, board: List[List[int]]) -> int:
+        # 装换为 string
+        start = [n for r in board for n in r]
+        target = [1,2,3,4,5,0]
+        # 对应索引的邻居
+        neighbors = [
+            [1,3],
+            [0,4,2],
+            [1,5],
+            [0,4],
+            [3,1,5],
+            [4,2]
+        ]
+
+        # BFS
+        q = Queue()
+        visited = []
+        q.put(start)
+        visited.append(start)
+        step = 0
+        while(not q.empty()):
+            nSize = q.qsize()
+            for i in range(nSize):
+                it = q.get()
+                if(it == target):
+                    return step
+                zeroIdx = it.index(0)
+                neighbor = neighbors[zeroIdx]
+                for idx, b in enumerate(neighbor):
+                    l = it.copy()
+                    l[zeroIdx], l[b] = l[b], l[zeroIdx]
+                    # 防止走回头路
+                    if(l not in visited):
+                        visited.append(l)
+                        q.put(l)
+            step += 1
+        return -1
+
+
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
