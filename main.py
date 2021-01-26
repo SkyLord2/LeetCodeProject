@@ -486,6 +486,7 @@ class BlackList:
 class Solution:
     def __init__(self):
         self.ans = float("-inf")
+        self.memo = {}
     """
     450. 删除二叉搜索树中的节点 ⭐
     给定一个二叉搜索树的根节点 root 和一个值 key，删除二叉搜索树中的 key 对应的节点，并保证二叉搜索树的性质不变。
@@ -2917,7 +2918,41 @@ class Solution:
             step += 1
         return -1
 
-
+    """
+    241. 为运算表达式设计优先级
+    给定一个含有数字和运算符的字符串，为表达式添加括号，改变其运算优先级以求出不同的结果。
+    你需要给出所有可能的组合的结果。有效的运算符号包含 +, - 以及 * 。
+    """
+    def diffWaysToCompute(self, input: str) -> List[int]:
+        """
+        分治思想
+        :param input:
+        :return:
+        """
+        res = []
+        if(input in self.memo):
+            return self.memo[input]
+        for idx, ch in enumerate(input):
+            # 一运算符为分界，进行划分
+            if(ch == '+' or ch == '-' or ch == '*'):
+                left = self.diffWaysToCompute(input[0: idx])
+                right = self.diffWaysToCompute(input[idx+1:])
+                # 合并
+                for i, l in enumerate(left):
+                    for j, r in enumerate(right):
+                        lValue = l
+                        rValue = r
+                        if(ch == '+'):
+                            res.append(lValue + rValue)
+                        elif(ch == '-'):
+                            res.append(lValue - rValue)
+                        else:
+                            res.append(lValue * rValue)
+        # res为空说明：input只有一个字符
+        if(not res):
+            res.append(int(input))
+        self.memo[input] = res
+        return res
 
 
 # Press the green button in the gutter to run the script.
