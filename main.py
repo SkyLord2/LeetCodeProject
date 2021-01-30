@@ -2985,6 +2985,67 @@ class Solution:
 
         sort(arr, len(arr))
         return res
+    """
+    391. 完美矩形
+    我们有 N 个与坐标轴对齐的矩形, 其中 N > 0, 判断它们是否能精确地覆盖一个矩形区域。
+    每个矩形用左下角的点和右上角的点的坐标来表示。例如，一个单位正方形可以表示为 [1,1,2,2]。
+     ( 左下角的点的坐标为 (1, 1) 以及右上角的点的坐标为 (2, 2) )。
+    """
+    def isRectangleCover(self, rectangles: List[List[int]]) -> bool:
+        """
+        判断能否构成一个完美矩形，从面积和顶点两个角度来判断：
+        1. 大矩形的面积等于所有小矩形的面积之和
+        2. 大矩形的顶点数必须为4
+        3. 大矩形的四个顶点与所有小矩形拼成大矩形的四个顶点一致
+        :param rectangles:
+        :return:
+        """
+        n = len(rectangles)
+        if(n == 0):
+            return
+        # 找出所有出现奇数次的顶点
+        points = set()
+        # 最小的左下角和右上角
+        X1 = float('inf')
+        Y1 = float('inf')
+        X2 = float('-inf')
+        Y2 = float('-inf')
+        total_area = 0
+        for x1,y1,x2,y2 in rectangles:
+            X1, Y1 = min(X1, x1), min(Y1, y1)
+            X2, Y2 = max(X2, x2), max(Y2, y2)
+
+            total_area = total_area + (x2 - x1) * (y2 - y1)
+
+            ld, lu = (x1, y1), (x1, y2)
+            ru, rd = (x2, y2), (x2, y1)
+            # 只保留出现奇数次的顶点
+            # 出现奇数次的顶点才可能回是角顶点
+            for p in [ld, lu, ru, rd]:
+                if(p not in points):
+                    points.add(p)
+                else:
+                    points.remove(p)
+        # 顶点数不等于4，无法构成矩形
+        if(len(points) != 4):
+            return False
+        # 面积不相等，有重叠或者空缺
+        area = (X2 - X1) * (Y2 - Y1)
+        if(area != total_area):
+            return False
+        # 顶点必须一致
+        if((X1, Y1) not in points):
+            return False
+        if((X1, Y2) not in points):
+            return False
+        if((X2, Y2) not in points):
+            return False
+        if((X2, Y1) not in points):
+            return False
+
+        return True
+    
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
