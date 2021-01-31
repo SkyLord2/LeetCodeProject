@@ -19,4 +19,15 @@ class Solution:
     给你 n ，请计算 F(n) 。
     """
     def fib(self, n: int) -> int:
-        pass
+        dp = [-1 for _ in range(n + 1)]
+        # 边界条件
+        dp[0] = 0
+        if (n < 1):
+            return dp[0]
+        dp[1] = 1
+
+        for i in range(2, n + 1):
+            # 状态转移
+            dp[i] = dp[i - 1] + dp[i - 2]
+
+        return dp[n]
