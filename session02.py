@@ -64,3 +64,38 @@ class Solution:
                     if((i-c) >= 0):
                         dp[i] = min(dp[i-c] + 1, dp[i])
         return dp[amount] if(dp[amount] != float('inf')) else -1
+    """
+    46. 全排列
+    给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+    
+    示例：
+    输入: [1,2,3]
+    输出:
+    [
+      [1,2,3],
+      [1,3,2],
+      [2,1,3],
+      [2,3,1],
+      [3,1,2],
+      [3,2,1]
+    ]
+    """
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res = []
+        track = []
+        def recall(nums: List[int], track: List[int]):
+            # 遍历到底了，添加结果
+            if (len(track) == len(nums)):
+                res.append(track.copy())
+                return
+            for i in range(0, len(nums)):
+                if (nums[i] in track):
+                    continue
+                # 选择当前的数字
+                track.append(nums[i])
+                # 继续向后选择
+                recall(nums, track)
+                # 取消当前的选择，做另外的选择
+                track.remove(nums[i])
+        recall(nums, track)
+        return res
