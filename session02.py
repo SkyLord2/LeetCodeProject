@@ -99,3 +99,49 @@ class Solution:
                 track.remove(nums[i])
         recall(nums, track)
         return res
+    """
+    51. N 皇后
+    n 皇后问题 研究的是如何将 n 个皇后放置在 n×n 的棋盘上，并且使皇后彼此之间不能相互攻击。
+    给你一个整数 n ，返回所有不同的 n 皇后问题 的解决方案。
+    每一种解法包含一个不同的 n 皇后问题 的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+    皇后彼此不能相互攻击，也就是说：任何两个皇后都不能处于同一条横行、纵行或斜线上。
+    1 <= n <= 9
+    """
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        board = [['.' for i in range(n)] for j in range(n)]
+        res = []
+        def isValid(board: List[List[str]], row: int, col: int):
+            nRow = len(board)
+            nCol = len(board)
+            # 检查列
+            for r in range(nRow):
+                if(board[r][col] == 'Q'):
+                    return False
+            # 检查右上
+            for r, c in zip(range(row-1, -1, -1), range(col+1, nCol)):
+                if(board[r][c] == 'Q'):
+                    return False
+            # 检查左上
+            for r, c in zip(range(row-1, -1, -1), range(col-1, -1, -1)):
+                if(board[r][c] == 'Q'):
+                    return False
+            return True
+        def turnToStr(board: List[List[str]]) -> List[str]:
+            sList = []
+            for idx, l in enumerate(board):
+                sList.append(''.join(l))
+            return sList
+
+        def recall(board: List[List[str]], row: int):
+            if(row == len(board)):
+                res.append(turnToStr(board))
+                return
+            nCol = len(board[row])
+            for col in range(nCol):
+                if(not isValid(board, row, col)):
+                    continue
+                board[row][col] = 'Q'
+                recall(board, row + 1)
+                board[row][col] = '.'
+        recall(board, 0)
+        return res
