@@ -212,3 +212,55 @@ class Solution:
                     q.put(node.right)
             res += 1
         return res
+
+    """
+    752. 打开转盘锁
+    你有一个带有四个圆形拨轮的转盘锁。每个拨轮都有10个数字： '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' 。每个拨轮可以自由旋转：
+    例如把 '9' 变为  '0'，'0' 变为 '9' 。每次旋转都只能旋转一个拨轮的一位数字。
+    锁的初始数字为 '0000' ，一个代表四个拨轮的数字的字符串。
+    列表 deadends 包含了一组死亡数字，一旦拨轮的数字和列表里的任何一个元素相同，这个锁将会被永久锁定，无法再被旋转。
+    字符串 target 代表可以解锁的数字，你需要给出最小的旋转次数，如果无论如何不能解锁，返回 -1。
+    """
+    def openLock(self, deadends: List[str], target: str) -> int:
+        def plusOne(s: str, i: int):
+            l = list(s)
+            n = int(l[i])
+            n += 1
+            if(n > 9):
+                n = 0
+            l[i] = str(n)
+            return ''.join(l)
+        def minusOne(s: str, i: int):
+            l = list(s)
+            n = int(l[i])
+            n -= 1
+            if (n < 0):
+                n = 9
+            l[i] = str(n)
+            return ''.join(l)
+
+        q = Queue()
+        q.put('0000')
+        memo = set()
+        memo.add('0000')
+        res = 0
+        while(not q.empty()):
+            nSize = q.qsize()
+            for i in range(nSize):
+                s = q.get()
+                if(s in deadends):
+                    continue
+                if(s == target):
+                    return res
+                n = len(s)
+                for i in range(n):
+                    plus = plusOne(s, i)
+                    minus = minusOne(s, i)
+                    if(plus not in deadends and plus not in memo):
+                        q.put(plus)
+                        memo.add(plus)
+                    if(minus not in deadends and minus not in memo):
+                        q.put(minus)
+                        memo.add(minus)
+            res += 1
+        return -1
