@@ -18,6 +18,13 @@ import random
 import functools
 import bisect
 
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
 class Solution:
     def __init__(self):
         pass
@@ -144,4 +151,64 @@ class Solution:
                 recall(board, row + 1)
                 board[row][col] = '.'
         recall(board, 0)
+        return res
+    """
+    111. 二叉树的最小深度
+    给定一个二叉树，找出其最小深度。
+    最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+    说明：叶子节点是指没有子节点的节点。
+    """
+    def minDepth(self, root: TreeNode) -> int:
+        """
+        BFS
+        :param root:
+        :return:
+        """
+        res = 0
+        if(not root):
+            return res
+        q = Queue()
+        q.put(root)
+        l = Queue()
+        while(not q.empty()):
+            node = q.get()
+            # print(q.empty())
+            if(not node.left and not node.right):
+                res += 1
+                break
+            if(node.left):
+                l.put(node.left)
+            if(node.right):
+                l.put(node.right)
+
+            if(q.empty()):
+                res += 1
+                # print(res)
+                if(not l.empty()):
+                    while(not l.empty()):
+                        it = l.get()
+                        q.put(it)
+                else:
+                    break
+        return res
+
+    def minDepthOthers(self, root: TreeNode) -> int:
+        res = 0
+        if (not root):
+            return res
+        q = Queue()
+        q.put(root)
+        res += 1
+
+        while(not q.empty()):
+            nSize = q.qsize()
+            for i in range(nSize):
+                node = q.get()
+                if(not node.left and not node.right):
+                    return res
+                if(node.left):
+                    q.put(node.left)
+                if(node.right):
+                    q.put(node.right)
+            res += 1
         return res
