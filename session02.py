@@ -264,3 +264,26 @@ class Solution:
                         memo.add(minus)
             res += 1
         return -1
+
+    """
+    704. 二分查找
+    给定一个  n  个元素有序的（升序）整型数组  nums 和一个目标值  target   ，写一个函数搜索  nums  中的 target，
+    如果目标值存在返回下标，否则返回 -1。
+    """
+    def search(self, nums: List[int], target: int) -> int:
+        n = len(nums)
+        if(n == 0):
+            return -1
+        left = 0
+        right = n-1
+
+        while(left <= right):
+            middle = left + (right - left)//2
+            it = nums[middle]
+            if(it == target):
+                return middle;
+            elif(it > target):
+                right = middle - 1
+            else:
+                left = middle + 1
+        return -1
