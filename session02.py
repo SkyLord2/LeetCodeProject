@@ -326,3 +326,55 @@ class Solution:
                 if(nums[i] == target):
                     right = i
             return [idx, right]
+
+    """
+    76. 最小覆盖子串
+    给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+    注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+    """
+    def minWindow(self, s: str, t: str) -> str:
+        """
+        滑动窗口
+        :param s:
+        :param t:
+        :return:
+        """
+        n = len(s)
+        if(n == 0):
+            return ''
+        need = {}
+        window = {}
+        for c in t:
+            if(c in need):
+                need[c] += 1
+            else:
+                need[c] = 1
+        left = 0
+        right = 0
+        valid = 0
+        start = 0
+        minLen = sys.maxsize
+        while(right < n):
+            c = s[right]
+            right += 1
+            if(c in need):
+                if(c in window):
+                    window[c] += 1
+                else:
+                    window[c] = 1
+                if(window[c] == need[c]):
+                    valid += 1
+            # 满足条件，开始收缩窗口
+            while(valid == len(need)):
+                # 更新结果
+                if(right - left < minLen):
+                    start = left
+                    minLen = right - left
+                w = s[left]
+                left += 1
+                if(w in need):
+                    if(w in window):
+                        if(need[w] == window[w]):
+                            valid -= 1
+                        window[w] -= 1
+        return '' if(minLen == sys.maxsize) else s[start: start + minLen]
