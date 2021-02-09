@@ -378,3 +378,56 @@ class Solution:
                             valid -= 1
                         window[w] -= 1
         return '' if(minLen == sys.maxsize) else s[start: start + minLen]
+    """
+    567. 字符串的排列
+    给定两个字符串 s1 和 s2，写一个函数来判断 s2 是否包含 s1 的排列。
+    换句话说，第一个字符串的排列之一是第二个字符串的子串。
+    """
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        """
+        滑动窗口
+        :param s:
+        :param t:
+        :return:
+        """
+        n = len(s2)
+        m = len(s1)
+        if (n == 0):
+            return ''
+        need = {}
+        window = {}
+        # 目标字符串的映射
+        for c in s1:
+            if (c in need):
+                need[c] += 1
+            else:
+                need[c] = 1
+        left = 0
+        right = 0
+        valid = 0
+        while (right < n):
+            c = s2[right]
+            right += 1
+            # 移动右指针，将字符加入窗口
+            if (c in need):
+                if (c in window):
+                    window[c] += 1
+                else:
+                    window[c] = 1
+                if (window[c] == need[c]):
+                    valid += 1
+            # 符合条件
+            while(valid == len(need)):
+                # 找到子串与s1的排列一致
+                if (right - left == m):
+                    return True
+                else:
+                    # 移动左指针，收缩窗口
+                    w = s2[left]
+                    left += 1
+                    if (w in need):
+                        if (w in window):
+                            if (need[w] == window[w]):
+                                valid -= 1
+                            window[w] -= 1
+        return False
