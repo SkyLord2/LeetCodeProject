@@ -431,3 +431,54 @@ class Solution:
                                 valid -= 1
                             window[w] -= 1
         return False
+    """
+    438. 找到字符串中所有字母异位词
+    给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
+    字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
+    
+    说明：
+    字母异位词指字母相同，但排列不同的字符串。
+    不考虑答案输出的顺序。
+    """
+    def findAnagrams(self, s: str, p: str) -> List[int]:
+        if (not s):
+            return []
+
+        n = len(s)
+        m = len(p)
+
+        need = {}
+        window = {}
+
+        for c in p:
+            if (c in need):
+                need[c] += 1
+            else:
+                need[c] = 1
+        left = 0
+        right = 0
+        valid = 0
+        res = []
+        while (right < n):
+            c = s[right]
+            right += 1
+            if (c in need):
+                if (c in window):
+                    window[c] += 1
+                else:
+                    window[c] = 1
+                if (window[c] == need[c]):
+                    valid += 1
+
+            while (valid == len(need)):
+                if (right - left == m):
+                    res.append(left)
+
+                w = s[left]
+                left += 1
+                if (w in need):
+                    if (w in window):
+                        if (window[w] == need[w]):
+                            valid -= 1
+                        window[w] -= 1
+        return res
