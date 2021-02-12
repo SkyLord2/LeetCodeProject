@@ -482,3 +482,31 @@ class Solution:
                             valid -= 1
                         window[w] -= 1
         return res
+    """
+    3. 无重复字符的最长子串
+    给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+    """
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        n = len(s)
+        if (n == 0):
+            return 0
+        window = set()
+        left = 0
+        right = 0
+        res = 0
+        while (right < n):
+            c = s[right]
+            right += 1
+            if (c in window):
+                while (left < right):
+                    w = s[left]
+                    window.remove(w)
+                    left += 1
+                    if (w == c):
+                        window.add(c)
+                        break
+            else:
+                window.add(c)
+                l = len(window)
+                res = max(res, l)
+        return res
