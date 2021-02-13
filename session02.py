@@ -549,7 +549,7 @@ class Solution:
         dp = [[0,0 ] for _ in range(n)]
         dp[0][0] = 0
         dp[0][1] = -prices[0]
-        # 只能进行一次买入卖出
+        # 注意：与121题不同的是，可以进行无数次买入卖出
         for i in range(1, n):
             # 当前未持有股票，昨天未持有，或者昨天持有但是今天卖出
             dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i])
