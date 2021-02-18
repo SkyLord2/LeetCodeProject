@@ -556,3 +556,31 @@ class Solution:
             # 当前持有股票，昨天就持有，或者昨天未持有但是今天第一次买入 0 - prices[i]
             dp[i][1] = max(dp[i - 1][1], dp[i-1][0] - prices[i])
         return dp[n - 1][0]
+    """
+    123. 买卖股票的最佳时机 III
+    给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+    设计一个算法来计算你所能获取的最大利润。你最多可以完成  两笔  交易。
+    注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+    """
+    def maxProfitIII(self, prices: List[int]) -> int:
+        n = len(prices)
+        if(n == 0):
+            return 0
+        dp = [[[0, 0] for i in range(3)] for j in range(n)]
+        # 边界条件
+        # 允许的交易次数为 0时，持有股票时，收益为 负无穷, 未持有股票时的收益为 0
+        for i in range(n):
+            dp[i][0][0] = 0
+            dp[i][0][1] = float('-inf')
+        # 第 0 天，持有股票时，收益为 -prices[0], 未持有股票时的收益为 0
+        for j in range(1,3):
+            dp[0][j][0] = 0
+            dp[0][j][1] = -prices[0]
+
+        for i in range(1, n):
+            for j in range(1, 3):
+                dp[i][j][0] = max(dp[i-1][j][0], dp[i-1][j][1] + prices[i])
+                # 当天持有股票的收益，等于昨日就持有股票 和 昨日为持有股票并买入股票之间的较大值
+                dp[i][j][1] = max(dp[i-1][j][1], dp[i-1][j-1][0] - prices[i])
+
+        return dp[n-1][2][0]
