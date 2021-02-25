@@ -1223,7 +1223,7 @@ class Solution:
             if(end <= s):
                 start = s
                 end = e
-        return ret
+        return len(intervals) - ret
     """
     56. 合并区间
     给出一个区间的集合，请合并所有重叠的区间。

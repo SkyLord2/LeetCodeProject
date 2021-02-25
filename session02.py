@@ -735,3 +735,36 @@ class Solution:
         self.memo[root] = res
 
         return res
+
+    """
+    1288. 删除被覆盖区间
+    给你一个区间列表，请你删除列表中被其他区间所覆盖的区间。
+    只有当 c <= a 且 b <= d 时，我们才认为区间 [a,b) 被区间 [c,d) 覆盖。
+    在完成所有删除操作后，请你返回列表中剩余区间的数目。
+    """
+    def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
+        # 排序，按起点升序排列，起点相同，终点降序排列
+        def compareRule(a, b):
+            if (a[0] == b[0]):
+                return b[1] - a[1]
+            return a[0] - b[0]
+        intervals.sort(key=functools.cmp_to_key(compareRule))
+        n = len(intervals)
+        # 三种情况，覆盖，相交，不相交
+        start = intervals[0][0]
+        end = intervals[0][1]
+        ret = 0
+        for idx in range(1, n):
+            s = intervals[idx][0]
+            e = intervals[idx][1]
+            # 覆盖
+            if(start <= s and end >= e):
+                ret += 1
+            # 相交
+            if(end >= s and end <= e):
+                end = e
+            # 不相交
+            if(end <= s):
+                start = s
+                end = e
+        return n - ret
