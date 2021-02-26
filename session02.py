@@ -768,3 +768,37 @@ class Solution:
                 start = s
                 end = e
         return n - ret
+    """
+    56. 合并区间
+    以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，
+    并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+    """
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        # 排序，按起点升序排列，起点相同，终点降序排列
+        def compareRule(a, b):
+            if (a[0] == b[0]):
+                return b[1] - a[1]
+            return a[0] - b[0]
+
+        intervals.sort(key=functools.cmp_to_key(compareRule))
+        n = len(intervals)
+        # 三种情况，覆盖，相交，不相交
+        start = intervals[0][0]
+        end = intervals[0][1]
+        ret = [[start, end]]
+        for idx in range(1, n):
+            s = intervals[idx][0]
+            e = intervals[idx][1]
+            # 覆盖
+            # if (start <= s and end >= e):
+            # ret.append([start, end])
+            # 相交
+            if (end >= s and end <= e):
+                end = e
+                ret[-1][1] = end
+            # 不相交
+            if (end < s):
+                start = s
+                end = e
+                ret.append([start, end])
+        return ret
