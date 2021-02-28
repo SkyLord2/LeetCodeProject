@@ -831,3 +831,36 @@ class Solution:
             else:
                 i += 1
         return res
+
+    """
+    15.三数之和（中等）
+    给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？
+    请你找出所有和为 0 且不重复的三元组。
+    注意：答案中不可以包含重复的三元组。
+    """
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        pass
+    """
+    1. 两数之和
+    给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。
+
+    你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
+    你可以按任意顺序返回答案。
+    """
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        hash = dict()
+        res = []
+        n = len(nums)
+        if (n == 0):
+            return res
+        for i in range(n):
+            hash[target - nums[i]] = i
+        for i in range(n):
+            item = nums[i]
+            if (item in hash):
+                another = hash[item]
+                if (another not in res and another != i):
+                    res.append(i)
+                    res.append(another)
+
+        return res
