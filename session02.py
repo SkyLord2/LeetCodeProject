@@ -971,3 +971,16 @@ class Solution:
             while(i < n and it == nums[i]):
                 i += 1
         return res
+    """
+    226. 翻转二叉树
+    翻转一棵二叉树。
+    """
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        if(not root):
+            return
+        tmp = root.right
+        root.right = root.left
+        root.left = tmp
+        self.invertTree(root.left)
+        self.invertTree(root.right)
+        return root
