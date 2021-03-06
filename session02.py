@@ -24,6 +24,12 @@ class TreeNode:
         self.left = left
         self.right = right
 
+class Node:
+    def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
+        self.val = val
+        self.left = left
+        self.right = right
+        self.next = next
 
 class Solution:
     def __init__(self):
@@ -1009,3 +1015,20 @@ class Solution:
         while(p.right):
             p = p.right
         p.right = right
+
+    """
+    116. 填充每个节点的下一个右侧节点指针
+    给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。
+    填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+    初始状态下，所有 next 指针都被设置为 NULL。
+    """
+    def connect(self, root: 'Node') -> 'Node':
+        if (not root):
+            return
+        if (root.left):
+            root.left.next = root.right
+        if (root.right):
+            root.right.next = root.next.left if (root.next) else None
+        self.connect(root.left)
+        self.connect(root.right)
+        return root
