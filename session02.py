@@ -1032,3 +1032,29 @@ class Solution:
         self.connect(root.left)
         self.connect(root.right)
         return root
+    """
+    416. 分割等和子集
+    给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+    注意:
+    每个数组中的元素不会超过 100
+    数组的大小不会超过 200
+    """
+    def canPartition(self, nums: List[int]) -> bool:
+        s = sum(nums)
+        if(s % 2 != 0):
+            return False
+        half = s // 2
+        n = len(nums)
+        # 变成了背包问题
+        dp = [[False for i in range(half + 1)] for j in range(n + 1)]
+        for i in range(n+1):
+            dp[i][0] = True
+        for i in range(1, n + 1):
+            for j in range(1, half + 1):
+                if(nums[i-1] <= j):
+                    # 满足条件时，可以选择装入或者不装入
+                    dp[i][j] = dp[i-1][j-nums[i-1]] or dp[i-1][j]
+                else:
+                    dp[i][j] = dp[i-1][j]
+        return dp[n][half] == 1
