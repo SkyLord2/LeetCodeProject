@@ -23,7 +23,10 @@ class TreeNode:
         self.val = val
         self.left = left
         self.right = right
-
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 class Node:
     def __init__(self, val: int = 0, left: 'Node' = None, right: 'Node' = None, next: 'Node' = None):
         self.val = val
@@ -1058,3 +1061,37 @@ class Solution:
                 else:
                     dp[i][j] = dp[i-1][j]
         return dp[n][half] == 1
+    """
+    92. 反转链表 II
+    反转从位置 m 到 n 的链表。请使用一趟扫描完成反转。
+    """
+    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
+        successor = None
+        # 反转链表的前n个节点
+        def reverseN(head: ListNode, N: int):
+            nonlocal successor
+            if(N == 1):
+                successor = head.next
+                return head
+            last = reverseN(head.next, N-1)
+            head.next.next = head
+            head.next = successor
+            return last
+        if(left == 1):
+            return reverseN(head, right)
+        head.next = self.reverseBetween(head.next, left-1, right-1)
+        return head
+    """
+    25. K 个一组翻转链表
+    给你一个链表，每 k 个节点一组进行翻转，请你返回翻转后的链表。
+
+    k 是一个正整数，它的值小于或等于链表的长度。
+
+    如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+
+    进阶：
+    你可以设计一个只使用常数额外空间的算法来解决此问题吗？
+    你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+    """
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+        pass
