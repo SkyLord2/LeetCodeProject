@@ -1094,4 +1094,24 @@ class Solution:
     你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
     """
     def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
-        pass
+        def reverseBetwen(a: ListNode, b: ListNode) -> ListNode:
+            pre = None
+            cur = a
+            nxt = a
+            while(cur != b):
+                nxt = cur.next
+                cur.next = pre
+                pre = cur
+                cur = nxt
+            return pre
+        if(not head):
+            return None
+        a = head
+        b = head
+        for i in range(k):
+            if(not b):
+                return head
+            b = b.next
+        newHead = reverseBetwen(a, b)
+        a.next = self.reverseKGroup(b, k)
+        return newHead
