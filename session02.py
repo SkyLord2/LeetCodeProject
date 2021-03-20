@@ -1115,3 +1115,28 @@ class Solution:
         newHead = reverseBetwen(a, b)
         a.next = self.reverseKGroup(b, k)
         return newHead
+    """
+    234. 回文链表
+    请判断一个链表是否为回文链表。
+    """
+    def isPalindrome(self, head: ListNode) -> bool:
+        """
+        双指针，后序遍历，递归
+        :param head:
+        :return:
+        """
+        left = head
+        def traverse(head: ListNode) -> bool:
+            """
+            单链表的后序遍历
+            :param head:
+            :return:
+            """
+            nonlocal left
+            if(not head):
+                return True
+            res = traverse(head.next)
+            res = res and (left.val == head.val)
+            left = left.next
+            return res
+        return traverse(head)
