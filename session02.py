@@ -1140,3 +1140,34 @@ class Solution:
             left = left.next
             return res
         return traverse(head)
+    """
+    654. 最大二叉树
+    给定一个不含重复元素的整数数组 nums 。一个以此数组直接递归构建的 最大二叉树 定义如下：
+
+    二叉树的根是数组 nums 中的最大元素。
+    左子树是通过数组中 最大值左边部分 递归构造出的最大二叉树。
+    右子树是通过数组中 最大值右边部分 递归构造出的最大二叉树。
+    返回有给定数组 nums 构建的 最大二叉树 。
+    """
+    def getMax(self, nums: List[int]):
+        res = None
+        resIdx = None
+        for idx, i in enumerate(nums):
+            if (res is None):
+                res = i
+                resIdx = idx
+            elif (res < i):
+                res = i
+                resIdx = idx
+        return (res, resIdx)
+    def constructMaximumBinaryTree(self, nums: List[int]) -> TreeNode:
+        if(not nums):
+            return None
+        m = max(nums)
+        idx = nums.index(m)
+        root = TreeNode(val=m)
+        left = self.constructMaximumBinaryTree(nums[:idx])
+        right = self.constructMaximumBinaryTree(nums[idx+1:])
+        root.left = left
+        root.right = right
+        return root
