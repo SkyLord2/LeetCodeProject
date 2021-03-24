@@ -1230,3 +1230,44 @@ class Solution:
             root.right = build(inorder[inIdx+1:], postorder[inIdx:-1])
             return root
         return build(inorder, postorder)
+    """
+    652. 寻找重复的子树
+    给定一棵二叉树，返回所有重复的子树。对于同一类的重复子树，你只需要返回其中任意一棵的根结点即可。
+    两棵树重复是指它们具有相同的结构以及相同的结点值。
+    
+    示例 1：
+    
+            1
+           / \
+          2   3
+         /   / \
+        4   2   4
+           /
+          4
+    下面是两个重复的子树：
+    
+          2
+         /
+        4
+    和
+    
+        4
+    """
+    def findDuplicateSubtrees(self, root: TreeNode) -> List[TreeNode]:
+        resMap = dict()
+        res = []
+        def traverse(root: TreeNode) -> str:
+            if(not root):
+                return '#'
+            left = traverse(root.left)
+            right = traverse(root.right)
+            rootStr = left + ',' + right + ',' + str(root.val)
+            if(rootStr in resMap):
+                if(resMap[rootStr] == 1):
+                    res.append(root)
+                resMap[rootStr] = resMap[rootStr] + 1
+            else:
+                 resMap[rootStr] = 1
+            return rootStr
+        traverse(root)
+        return res
