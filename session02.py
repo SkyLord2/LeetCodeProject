@@ -34,6 +34,56 @@ class Node:
         self.right = right
         self.next = next
 
+"""
+297. 二叉树的序列化与反序列化
+序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，
+同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，
+你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+提示: 输入输出格式与 LeetCode 目前使用的方式一致，详情请参阅 LeetCode 序列化二叉树的格式。
+你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。s
+"""
+class Codec:
+    def __init__(self):
+        self.res = ''
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+        前序遍历
+        :type root: TreeNode
+        :rtype: str
+        """
+        def serial(root):
+            if(not root):
+                self.res = self.res + '#' + ','
+                return
+            self.res = self.res + str(root.val) + ','
+            self.serialize(root.left)
+            self.serialize(root.right)
+        serial(root)
+        return self.res
+
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+        :type data: str
+        :rtype: TreeNode
+        """
+        sdata = data.split(',')
+        def deserial(sdata):
+            if(not sdata):
+                return None
+            s = sdata[0]
+            del(sdata[0])
+            if(s == '#'):
+                return None
+            root = TreeNode(int(s))
+            root.left = deserial(sdata)
+            root.right = deserial(sdata)
+            return root
+        return deserial(sdata)
+
 class Solution:
     def __init__(self):
         self.memo = {}
@@ -1393,3 +1443,4 @@ class Solution:
                 return False
             return isValid(root.left, root, max) and isValid(root.right, min, root)
         return isValid(root, None, None)
+    
