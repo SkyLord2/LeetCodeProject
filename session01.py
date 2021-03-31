@@ -393,7 +393,7 @@ class NestedIterator:
             for i in range(len(first)-1, -1, -1):
                 item = first[i]
                 self.retlist.insert(0, item)
-        return len(self.retlist) == 0
+        return len(self.retlist) != 0
 
 
 """

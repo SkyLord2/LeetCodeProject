@@ -84,6 +84,65 @@ class Codec:
             return root
         return deserial(sdata)
 
+"""
+341. 扁平化嵌套列表迭代器
+给你一个嵌套的整型列表。请你设计一个迭代器，使其能够遍历这个整型列表中的所有整数。
+
+列表中的每一项或者为一个整数，或者是另一个列表。其中列表的元素也可能是整数或是其他列表。
+"""
+class NestedInteger:
+   def isInteger(self) -> bool:
+       """
+       @return True if this NestedInteger holds a single integer, rather than a nested list.
+       """
+
+   def getInteger(self) -> int:
+       """
+       @return the single integer that this NestedInteger holds, if it holds a single integer
+       Return None if this NestedInteger holds a nested list
+       """
+
+   def getList(self): # -> [NestedInteger]:
+       """
+       @return the nested list that this NestedInteger holds, if it holds a nested list
+       Return None if this NestedInteger holds a single integer
+       """
+class NestedIterator:
+    def __init__(self, nestedList: [NestedInteger]):
+        self.res = []
+        for ele in nestedList:
+            self.traverse(ele, self.res)
+
+    def next(self) -> int:
+        first = self.res[0]
+        del(self.res[0])
+        return first
+    def hasNext(self) -> bool:
+        return len(self.res) != 0
+    def traverse(self, nestedList, res):
+        if(nestedList.isInteger()):
+            res.append(nestedList.getInteger())
+            return
+        for ele in nestedList:
+            self.traverse(ele, res)
+
+class NestedIteratorEx:
+    def __init__(self, nestedList: [NestedInteger]):
+        self.retlist = nestedList
+
+    def next(self) -> int:
+        first = self.retlist[0].getInteger()
+        del (self.retlist[0])
+        return first
+
+    def hasNext(self) -> bool:
+        while (self.retlist and not self.retlist[0].isInteger()):
+            first = self.retlist[0].getList();
+            del (self.retlist[0])
+            for i in range(len(first) - 1, -1, -1):
+                item = first[i]
+                self.retlist.insert(0, item)
+        return len(self.retlist) != 0
 class Solution:
     def __init__(self):
         self.memo = {}
