@@ -143,6 +143,71 @@ class NestedIteratorEx:
                 item = first[i]
                 self.retlist.insert(0, item)
         return len(self.retlist) != 0
+"""
+查并集
+主要解决图论中的动态连通性问题，
+满足：
+1. 自反性
+2. 对称性
+3. 传递性
+"""
+class UnionFind:
+    def __init__(self, n):
+        self._count = n
+        # self.parent[i] 表示节点 i 的父节点
+        self.parent = []
+        # self.size[i] 表示节点 i 的子节点的个数
+        self.size = []
+        # 初始，节点只和自己连通
+        for i in range(n):
+            self.parent[i] = i
+            self.size[i] = 1
+    def union(self, p, q):
+        """
+        将点p 与 点q 联通在一起
+        :param p:
+        :param q:
+        :return:
+        """
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        if(rootP == rootQ):
+            return
+        # 保持树的平衡性
+        if(self.size[rootP] > self.size[rootQ]):
+            self.parent[rootQ] = rootP
+            self.size[rootP] += self.size[rootQ]
+        else:
+            self.parent[rootP] = rootQ
+            self.size[rootQ] += self.size[rootP]
+        self._count -= 1
+    def find(self, p):
+        """
+        得到节点p的根节点
+        :param p:
+        :return:
+        """
+        while(self.parent[p] != p):
+            # 压缩树的高度
+            self.parent[p] = self.parent[self.parent[p]]
+            p = self.parent[p]
+        return p
+    def connected(self, p, q):
+        """
+        点p 与 点q是否连通
+        :param p:
+        :param q:
+        :return:
+        """
+        rootP = self.find(p)
+        rootQ = self.find(q)
+        return rootP == rootQ
+    def count(self):
+        """
+        返回当前节点集中的可联通分量
+        :return:
+        """
+        return self._count
 class Solution:
     def __init__(self):
         self.memo = {}
@@ -1541,3 +1606,11 @@ class Solution:
 
         nodeSize(root)
         return size
+    """
+    130. 被围绕的区域
+    给你一个 m x n 的矩阵 board ，由若干字符 'X' 和 'O' ，找到所有被 'X' 围绕的区域，并将这些区域里所有的 'O' 用 'X' 填充。
+    """
+    def solve(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
