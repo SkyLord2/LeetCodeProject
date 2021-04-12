@@ -155,9 +155,9 @@ class UnionFind:
     def __init__(self, n):
         self._count = n
         # self.parent[i] 表示节点 i 的父节点
-        self.parent = []
+        self.parent = [0 for i in range(n)]
         # self.size[i] 表示节点 i 的子节点的个数
-        self.size = []
+        self.size = [0 for i in range(n)]
         # 初始，节点只和自己连通
         for i in range(n):
             self.parent[i] = i
@@ -1612,5 +1612,42 @@ class Solution:
     """
     def solve(self, board: List[List[str]]) -> None:
         """
-        Do not return anything, modify board in-place instead.
+        二维坐标[x][y]转换为一维坐标 x * n + y.
         """
+        if(not board):
+            return
+        m = len(board)
+        n = len(board[0])
+        uf = UnionFind(m * n + 1)
+        dummy = m * n
+        # 首列与末列中的 O 与 dummy相连接
+        for i in range(m):
+            if(board[i][0] == 'O'):
+                uf.union(dummy, i * n)
+            if(board[i][n-1] == 'O'):
+                uf.union(dummy, i * n + n -1)
+        # 首行与末行中的 O 与 dummy相连接
+        for j in range(n):
+            if(board[0][j] == 'O'):
+                uf.union(dummy, j)
+            if(board[m-1][j] == 'O'):
+                uf.union(dummy, (m-1) * n + j)
+
+        # 方向数组
+        d = [[1, 0], [0, 1], [0, -1], [-1, 0]]
+        for i in range(1, m-1):
+            for j in range(1, n-1):
+                if(board[i][j] == 'O'):
+                    # 将周围的 O 与 当前的 O 连接
+                    for k in range(4):
+                        x = i + d[k][0]
+                        y = j + d[k][1]
+                        if(board[x][y] == 'O'):
+                            uf.union(x * n + y, i * n + j)
+
+        # 所有不与 dummy 连接的 O 替换为 X
+        for i in range(1, m-1):
+            for j in range(1, n-1):
+                if(board[i][j] == 'O'):
+                    if(not uf.connected(dummy, i * n + j)):
+                        board[i][j] = 'X'
