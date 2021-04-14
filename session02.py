@@ -208,6 +208,83 @@ class UnionFind:
         :return:
         """
         return self._count
+
+"""
+146. LRU 缓存机制
+运用你所掌握的数据结构，设计和实现一个   LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+
+LRUCache(int capacity) 以正整数作为容量  capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value)  如果关键字已经存在，则变更其数据值；
+如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+进阶：你是否可以在  O(1) 时间复杂度内完成这两种操作？
+"""
+class Node:
+    def __init__(self, key, val):
+        self.key = key
+        self.val = val
+        self.pre = None
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.size = 0
+        self.head = Node(None, None)
+        self.tail = Node(None, None)
+        self.head.next = self.tail
+        self.tail.pre = self.head
+
+    def remove(self, node: Node):
+        pre = node.pre
+        next = node.next
+        pre.next = next
+        next.pre = pre
+        self.size -= 1
+
+    def append(self, node: Node):
+        last = self.tail.pre
+        last.next = node
+        node.pre = last
+        node.next = self.tail
+        self.tail.pre = node
+    def pop_front(self):
+        first = self.head.next
+        self.remove(first)
+        return first
+
+class LRUCache:
+    """
+    1. 要求删除最久未使用，需要保持 插入 顺序， 使用链表
+    2. 要求 O(1) 时间复杂度，使用 Hash
+    """
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.k = LinkedList()
+        self.kv = {}
+
+    def get(self, key: int) -> int:
+        if(key in self.kv):
+            node = self.kv[key]
+            self.k.remove(node)
+            self.k.append(node)
+            return node.val
+        else:
+            return -1
+    def put(self, key: int, value: int) -> None:
+        if(key in self.kv):
+            node = self.kv[key]
+            node.val = value
+            self.k.remove(node)
+            self.k.append(node)
+        else:
+            if(len(self.kv) >= self.capacity):
+                first = self.k.pop_front()
+                del self.kv[first.key]
+            new_node = Node(key, value)
+            self.k.append(new_node)
+            self.kv[key] = new_node
+
 class Solution:
     def __init__(self):
         self.memo = {}
