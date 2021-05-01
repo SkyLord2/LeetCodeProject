@@ -123,12 +123,12 @@ class LFUCache:
             freq = self.keyToFreq[key]
             oringinKeys = self.freqToKeys[freq]
             oringinKeys.remove(key)
-            freq += 1
+
             if(oringinKeys.size() == 0):
                 del self.freqToKeys[freq]
                 if(freq == self.minFreq):
-                    self.minFreq = freq
-
+                    self.minFreq = freq + 1
+            freq += 1
             if(freq in self.freqToKeys):
                 self.freqToKeys[freq].add(key)
             else:

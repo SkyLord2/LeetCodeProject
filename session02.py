@@ -236,11 +236,12 @@ class LinkedList:
         self.tail.pre = self.head
 
     def remove(self, node: Node):
-        pre = node.pre
-        next = node.next
-        pre.next = next
-        next.pre = pre
-        self.size -= 1
+        if(self.size > 0):
+            pre = node.pre
+            next = node.next
+            pre.next = next
+            next.pre = pre
+            self.size -= 1
 
     def append(self, node: Node):
         last = self.tail.pre
@@ -248,6 +249,7 @@ class LinkedList:
         node.pre = last
         node.next = self.tail
         self.tail.pre = node
+        self.size += 1
     def pop_front(self):
         first = self.head.next
         self.remove(first)
@@ -284,6 +286,120 @@ class LRUCache:
             new_node = Node(key, value)
             self.k.append(new_node)
             self.kv[key] = new_node
+
+"""
+460. LFU 缓存
+请你为 最不经常使用（LFU）缓存算法设计并实现数据结构。
+
+实现 LFUCache 类：
+    1.LFUCache(int capacity) - 用数据结构的容量 capacity 初始化对象
+    2.int get(int key) - 如果键存在于缓存中，则获取键的值，否则返回 -1。
+    3.void put(int key, int value) - 如果键已存在，则变更其值；
+        如果键不存在，请插入键值对。当缓存达到其容量时，则应该在插入新项之前，使最不经常使用的项无效。
+        在此问题中，当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 最久未使用 的键。
+    4.注意「项的使用次数」就是自插入该项以来对其调用 get 和 put 函数的次数之和。使用次数会在对应项被移除后置为 0 。
+
+为了确定最不常使用的键，可以为缓存中的每个键维护一个 使用计数器 。使用计数最小的键是最久未使用的键。
+当一个键首次插入到缓存中时，它的使用计数器被设置为 1 (由于 put 操作)。对缓存中的键执行 get 或 put 操作，使用计数器的值将会递增。
+"""
+
+
+class LinkedHashSet:
+    def __init__(self):
+        self.l = []
+        self.s = set()
+
+    def add(self, val):
+        if (val not in self.s):
+            self.l.append(val)
+            self.s.add(val)
+        return self
+
+    def get(self, idx):
+        if (idx >= len(self.l)):
+            return None
+        else:
+            return self.l[idx]
+
+    def remove(self, val):
+        if (val in self.s):
+            self.s.remove(val)
+            self.l.remove(val)
+
+    def size(self):
+        return len(self.l)
+
+    def existed(self, val):
+        return (val in self.s)
+
+
+class LFUCache:
+
+    def __init__(self, capacity: int):
+        self.keyToVal = {}
+        self.keyToFreq = {}
+        self.freqToKeys = {}
+        self.minFreq = 0
+        self.capacity = capacity
+
+    def get(self, key: int) -> int:
+        if (key in self.keyToVal):
+            self.increaseFreq(key)
+            return self.keyToVal[key]
+        else:
+            return -1
+
+    def increaseFreq(self, key):
+        if (key in self.keyToFreq):
+            freq = self.keyToFreq[key]
+            oringinKeys = self.freqToKeys[freq]
+            oringinKeys.remove(key)
+
+            if (oringinKeys.size() == 0):
+                del self.freqToKeys[freq]
+                if (freq == self.minFreq):
+                    self.minFreq = freq + 1
+
+            freq += 1
+            if (freq in self.freqToKeys):
+                self.freqToKeys[freq].add(key)
+            else:
+                self.freqToKeys[freq] = LinkedHashSet().add(key)
+
+            self.keyToFreq[key] = freq
+        else:
+            self.keyToFreq[key] = 1
+            if (1 in self.freqToKeys):
+                self.freqToKeys[1].add(key)
+            else:
+                self.freqToKeys[1] = LinkedHashSet().add(key)
+            self.minFreq = 1
+
+    def removeMinFreq(self):
+        keys = self.freqToKeys[self.minFreq]
+        oldKey = keys.get(0)
+        keys.remove(oldKey)
+        if (keys.size() == 0):
+            del self.freqToKeys[self.minFreq]
+
+        del self.keyToFreq[oldKey]
+        del self.keyToVal[oldKey]
+
+    def put(self, key: int, value: int) -> None:
+        if (self.capacity <= 0):
+            return
+        if (key in self.keyToVal):
+            self.keyToVal[key] = value
+            self.increaseFreq(key)
+        else:
+            if (len(self.keyToVal) < self.capacity):
+                pass
+            else:
+                # 清除使用频率最小的键值
+                self.removeMinFreq()
+            self.keyToVal[key] = value
+            self.increaseFreq(key)
+
 
 class Solution:
     def __init__(self):
