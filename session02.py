@@ -321,6 +321,11 @@ class LinkedHashSet:
         else:
             return self.l[idx]
 
+    def pop(self):
+        last = self.get(-1)
+        self.remove(last)
+        return last
+
     def remove(self, val):
         if (val in self.s):
             self.s.remove(val)
@@ -400,6 +405,51 @@ class LFUCache:
             self.keyToVal[key] = value
             self.increaseFreq(key)
 
+"""
+895. 最大频率栈
+实现 FreqStack，模拟类似栈的数据结构的操作的一个类。
+
+FreqStack 有两个函数：
+
+push(int x)，将整数 x 推入栈中。
+pop()，它移除并返回栈中出现最频繁的元素。
+如果最频繁的元素不只一个，则移除并返回最接近栈顶的元素。
+"""
+class FreqStack:
+
+    def __init__(self):
+        self.max_freq = 0   # 出现频率最大的元素
+        self.vf = {}        # 各个元素对应的出现频率
+        self.fvs = {}       # 不同的出现频率对应的元素
+
+    def push(self, val: int) -> None:
+        if(val in self.vf):
+            old_freq = self.vf[val]
+            self.vf[val] = old_freq + 1
+        else:
+            self.vf[val] = 1
+
+        freq = self.vf[val]
+
+        if(freq > self.max_freq):
+            self.max_freq = freq
+
+        if(freq in self.fvs):
+            self.fvs[freq].append(val)
+        else:
+            li = []
+            li.append(val)
+            self.fvs[freq] = li
+
+
+    def pop(self) -> int:
+        vals = self.fvs[self.max_freq]
+        last = vals.pop()
+        freq = self.vf[last] - 1
+        self.vf[last] = freq
+        if(len(vals) == 0):
+            self.max_freq -= 1
+        return last
 
 class Solution:
     def __init__(self):
