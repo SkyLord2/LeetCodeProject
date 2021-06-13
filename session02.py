@@ -451,6 +451,77 @@ class FreqStack:
             self.max_freq -= 1
         return last
 
+"""
+295. 数据流的中位数
+中位数是有序列表中间的数。如果列表长度是偶数，中位数则是中间两个数的平均值。
+
+例如，
+[2,3,4]的中位数是 3
+[2,3] 的中位数是 (2 + 3) / 2 = 2.5
+设计一个支持以下两种操作的数据结构：
+void addNum(int num) - 从数据流中添加一个整数到数据结构中。
+double findMedian() - 返回目前所有元素的中位数。
+"""
+class MaxHeap(object):
+    """
+    大顶堆
+    """
+    def __init__(self):
+        self.heap = []
+        heapq.heapify(self.heap)
+    def push(self, value):
+        heapq.heappush(self.heap, -value)
+    def pop(self):
+        return -heapq.heappop(self.heap)
+    def getMax(self):
+        return - self.heap[0]
+    def size(self):
+        return len(self.heap)
+
+class MinHeap(object):
+    """
+    小顶堆
+    """
+    def __init__(self):
+        self.heap = []
+        heapq.heapify(self.heap)
+    def push(self, value):
+        heapq.heappush(self.heap, value)
+    def pop(self):
+        return heapq.heappop(self.heap)
+    def getMin(self):
+        return self.heap[0]
+    def size(self):
+        return len(self.heap)
+
+class MedianFinder:
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.minHeap = MinHeap()
+        self.maxHeap = MaxHeap()
+
+    def addNum(self, num: int) -> None:
+        minSize = self.minHeap.size()
+        maxSize = self.maxHeap.size()
+        if(minSize >= maxSize):
+            self.minHeap.push(num)
+            self.maxHeap.push(self.minHeap.pop())
+        else:
+            self.maxHeap.push(num)
+            self.minHeap.push(self.maxHeap.pop())
+
+    def findMedian(self) -> float:
+        minSize = self.minHeap.size()
+        maxSize = self.maxHeap.size()
+        if(minSize > maxSize):
+            return self.minHeap.getMin()
+        elif(maxSize > minSize):
+            return self.maxHeap.getMax()
+        else:
+            return (self.minHeap.getMin() + self.maxHeap.getMax())/2
 class Solution:
     def __init__(self):
         self.memo = {}
