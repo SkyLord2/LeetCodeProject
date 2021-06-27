@@ -2127,3 +2127,26 @@ class Solution:
         for idx, i in enumerate(nums1):
             res.append(resMap[i])
         return res
+    """
+    503. 下一个更大元素 II
+    给定一个循环数组（最后一个元素的下一个元素是数组的第一个元素），输出每个元素的下一个更大元素。数字 x 的下一个更大的元素是按数组遍历顺序，
+    这个数字之后的第一个比它更大的数，这意味着你应该循环地搜索它的下一个更大的数。如果不存在，则输出 -1。
+    """
+    def nextGreaterElements(self, nums: List[int]) -> List[int]:
+        """
+        将数组重复一次达到循环的效果
+        :param nums:
+        :return:
+        """
+        recurrent_nums = nums + nums
+        stack = []
+        n1 = len(nums)
+        ret = [-1 for i in range(n1)]
+        n = len(recurrent_nums)
+        for idx in range(n-1, -1, -1):
+            cur = recurrent_nums[idx]
+            while(stack and stack[-1] <= cur):
+                stack.pop()
+            ret[idx % n1] = stack[-1] if(stack) else -1
+            stack.append(cur)
+        return ret
