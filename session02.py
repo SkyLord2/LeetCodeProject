@@ -17,6 +17,7 @@ import cmath
 import random
 import functools
 import bisect
+from MonotonicQueue import MonotonicQueue
 
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -2159,6 +2160,11 @@ class Solution:
     提示：气温 列表长度的范围是 [1, 30000]。每个气温的值的均为华氏度，都是在 [30, 100] 范围内的整数。
     """
     def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        """
+        单调栈
+        :param temperatures:
+        :return:
+        """
         n = len(temperatures)
         ret = [0 for i in range(n)]
         stack = []
@@ -2169,3 +2175,20 @@ class Solution:
             ret[idx] = (stack[-1] - idx) if (stack) else 0
             stack.append(idx)
         return ret
+    """
+    239. 滑动窗口最大值
+    给你一个整数数组 nums，有一个大小为  k  的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k  个数字。
+    滑动窗口每次只向右移动一位。
+    返回滑动窗口中的最大值。
+    """
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        res = []
+        window = MonotonicQueue()
+        for idx, item in enumerate(nums):
+            if(idx < k-1):
+                window.push(item)
+            else:
+                window.push(item)
+                res.append(window.max())
+                window.pop(nums[idx-k+1])
+        return res
