@@ -2312,3 +2312,34 @@ class Solution:
                 res.append(window.max())
                 window.pop(nums[idx-k+1])
         return res
+    """
+    870. 优势洗牌 田忌赛马
+    给定两个大小相等的数组 A 和 B，A 相对于 B 的优势可以用 满足A[i] > B[i]的索引i的数目 来描述。
+    返回 A 的任意排列，使其相对于 B 的优势最大化。
+    """
+    def advantageCount(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        class num2_item(object):
+            def __init__(self, idx, val):
+                self.idx = idx
+                self.val = val
+            def __lt__(self, other):
+                return self.val > other.val
+
+        n = len(nums2)
+        res = [0 for i in range(n)]
+        pq = PriorityQueue()
+        for (idx, item) in enumerate(nums2):
+            pq.put(num2_item(idx, item))
+
+        nums1.sort()
+        left = 0
+        right = n-1
+        while(not pq.empty()):
+            ele = pq.get()
+            if(nums1[right] > ele.val):
+                res[ele.idx] = nums1[right]
+                right -= 1
+            else:
+                res[ele.idx] = nums1[left]
+                left += 1
+        return res
