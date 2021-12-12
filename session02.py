@@ -2403,3 +2403,43 @@ class Solution:
             else:
                 minLoad = load + 1
         return minLoad
+    """
+    410. 分割数组的最大值
+    给定一个非负整数数组 nums 和一个整数 m ，你需要将这个数组分成 m 个非空的连续子数组。
+    设计一个算法使得这 m 个子数组各自和的最大值最小。
+    前提条件（超出这个条件算法会失败）：
+    1 <= nums.length <= 1000
+    0 <= nums[i] <= 106
+    1 <= m <= min(50, nums.length)
+    """
+    def splitArray(self, nums: List[int], m: int) -> int:
+        def split(nums, max):
+            """
+            和的最大值为max，则最少可以分割为几个数组，
+            :param nums:
+            :param max:
+            :return:
+            """
+            s = 0
+            # 至少可以分割为一个子数组
+            count = 1
+            for (idx, item) in enumerate(nums):
+                if ((s + item) > max):
+                    count += 1
+                    # 清空子数组的和，下一个子数组的第一个元素 item
+                    s = item
+                else:
+                    s += item
+            return count
+        # max的取值范围
+        lo = max(nums)
+        hi = sum(nums)
+
+        while(lo <= hi):
+            mid = lo + (hi-lo)//2
+            n = split(nums, mid)
+            if (n <= m):
+                hi = mid - 1
+            else:
+                lo = mid + 1
+        return lo
