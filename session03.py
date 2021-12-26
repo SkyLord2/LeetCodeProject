@@ -50,3 +50,50 @@ class Solution:
                 if (i - coin >= 0):
                     dp[i] = min(dp[i - coin] + 1, dp[i])
         return -1 if (dp[amount] == 10001) else dp[amount]
+    """
+    300. 最长递增子序列
+    给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+    子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。
+    例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
+    提示：
+        1 <= nums.length <= 2500
+        -104 <= nums[i] <= 104
+    进阶：
+        你可以设计时间复杂度为 O(n2) 的解决方案吗？
+        你能将算法的时间复杂度降低到 O(nlog(n)) 吗?
+    """
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        # 前 i 个元素的最长子序列的长度
+        dp = [1 for i in range(n)]
+        # O(n2)
+        for i in range(0, n):
+            for j in range(i):
+                if(nums[i] > nums[j]):
+                    dp[i] = max(dp[i], dp[j] + 1)
+        return max(dp)
+    """
+    patient sort(耐心排序)
+    只能把点数小的牌压到点数比它大的牌上；如果当前牌点数较大没有可以放置的堆，则新建一个堆，把这张牌放进去；如果当前牌有多个堆可供选择，则选择最左边的那一堆放置。
+    """
+    def lengthOfLIS_BS(self, nums: List[int]) -> int:
+        n = len(nums)
+        # 记录顶部的数值
+        top = [-200 for i in range(n)]
+        piles = 0
+
+        for (idx, item) in enumerate(nums):
+            left = 0
+            right = piles
+            while(left < right):
+                mid = left + (right - left)//2
+                topVal = top[mid]
+                if(item > topVal):
+                    left = mid + 1
+                elif(item < topVal):
+                    right = mid
+                else:
+                    right = mid
+            if(left == piles):
+                piles += 1
+            top[left] = item
