@@ -97,3 +97,28 @@ class Solution:
             if(left == piles):
                 piles += 1
             top[left] = item
+    """
+    931. 下降路径最小和
+    给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。
+
+    下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。
+    在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。
+    具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。
+    """
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        n = len(matrix)
+        dp = [[0 for i in range(n)] for j in range(n)]
+        for (idx, item) in enumerate(matrix[0]):
+            dp[0][idx] = item
+
+        for i in range(1, n):
+            for j in range(n):
+                cur = matrix[i][j]
+                c = []
+                c.append(dp[i-1][j] + cur)
+                if(j - 1 >= 0):
+                    c.append(dp[i-1][j-1] + cur)
+                if(j + 1 <= n-1):
+                    c.append(dp[i-1][j+1] + cur)
+                dp[i][j] = min(c)
+        return min(dp[n-1])
