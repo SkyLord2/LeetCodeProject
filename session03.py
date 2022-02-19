@@ -6,6 +6,7 @@
 # @File : session03.py
 # @Software: PyCharm
 from typing import List
+import functools
 class Solution:
     def __init__(self):
         self.memo = {}
@@ -159,3 +160,35 @@ class Solution:
                     # dp[i - 1][j - 1] + 1      替换操作
                     dp[i][j] = min([dp[i - 1][j - 1] + 1, dp[i - 1][j] + 1, dp[i][j - 1] + 1])
         return dp[n1][n2]
+    """
+    354. 俄罗斯套娃信封问题
+    给你一个二维整数数组 envelopes ，其中 envelopes[i] = [wi, hi] ，表示第 i 个信封的宽度和高度。
+    当另一个信封的宽度和高度都比这个信封大的时候，这个信封就可以放进另一个信封里，如同俄罗斯套娃一样。
+    请计算 最多能有多少个 信封能组成一组“俄罗斯套娃”信封（即可以把一个信封放到另一个信封里面）。
+    
+    注意：不允许旋转信封。
+    提示：
+        1 <= envelopes.length <= 5000
+        envelopes[i].length == 2
+        1 <= wi, hi <= 10^4
+    """
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        # 排序，按宽度升序排列，宽度相同，高度降序排列，固定住 宽度，只处理 高度
+        def compareRule(a, b):
+            if (a[0] == b[0]):
+                return b[1] - a[1]
+            return a[0] - b[0]
+        envelopes.sort(key=functools.cmp_to_key(compareRule))
+        n = len(envelopes)
+        hs = []
+        for i in range(n):
+            it = envelopes[i]
+            hs.append(it[1])
+        # 最少 嵌套一个
+        dp = [1 for i in range(n)]
+
+        for i in range(n):
+            for j in range(i):
+                if(hs[i] > hs[j]):
+                    dp[i] = max(dp[i], dp[j] + 1)
+        return max(dp)
