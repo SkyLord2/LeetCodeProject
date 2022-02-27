@@ -192,3 +192,16 @@ class Solution:
                 if(hs[i] > hs[j]):
                     dp[i] = max(dp[i], dp[j] + 1)
         return max(dp)
+    """
+    53. 最大子数组和
+    给你一个整数数组 nums ，请你找出一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+    子数组 是数组中的一个连续部分。
+    """
+    def maxSubArray(self, nums: List[int]) -> int:
+        n = len(nums)
+        # dp[i] 表示以 nums[i] 为结尾的子数组的和
+        dp = [0 for i in range(n)]
+        dp[0] = nums[0]
+        for i in range(1, n):
+            dp[i] = max(dp[i - 1] + nums[i], nums[i])
+        return max(dp)
